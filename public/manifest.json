@@ -1,0 +1,14 @@
+{
+  "name": "stei - Empowering Individuals",
+  "short_name": "stei",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
