@@ -43,7 +43,7 @@ export function WorkshopDetails({ workshop }) {
 
       {/* About Mentor */}
       <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-200 shadow-sm">
-        <div className="flex items-center mb-6">
+        <div className="flex items-center mb-8">
           <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
             <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -51,34 +51,54 @@ export function WorkshopDetails({ workshop }) {
           </div>
           <h3 className="text-2xl font-bold text-slate-800">About Mentor</h3>
         </div>
-        <div className="flex items-start space-x-6">
-          <div className="w-20 h-20 bg-gradient-to-br from-purple-200 to-pink-200 rounded-2xl overflow-hidden relative shadow-lg flex-shrink-0">
-            {workshop.mentor?.image ? (
+        
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Left side - Image */}
+          <div className="md:w-1/3">
+            <div className="relative h-[400px] w-full rounded-2xl overflow-hidden shadow-xl">
               <Image
-                src="/placeholder.svg?height=100&width=100"
-                alt={workshop.mentor?.name || "Mentor"}
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1573993472182%20%281%29.jpg-OVm1fWafCW2a4vffSUJCXikiuvnhme.jpeg"
+                alt="Dr. Sandhya Tewari"
                 fill
                 className="object-cover"
               />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-purple-300 to-pink-300 flex items-center justify-center">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-            )}
+            </div>
           </div>
-          <div className="flex-1">
-            <h4 className="text-xl font-bold text-slate-800 mb-1">
-              {workshop.mentor?.name || "Expert Mentor"}
-            </h4>
-            <p className="text-purple-600 font-medium mb-3">
-              {workshop.mentor?.title || "Industry Professional"}
-            </p>
-            <p className="text-slate-600 leading-relaxed">
-              {workshop.mentor?.bio ||
-                "Our expert mentor brings years of industry experience to help you master new skills."}
-            </p>
+
+          {/* Right side - Information */}
+          <div className="md:w-2/3">
+            <h4 className="text-3xl font-bold text-slate-800 mb-6">About Dr. Sandhya Tewari</h4>
+
+            <div className="space-y-4 text-slate-700">
+              <p className="text-lg leading-relaxed">
+                Dr. Sandhya Tewari is a seasoned professional with over 30 years of experience in education, human
+                resources, and personal development. A PhD holder in Management from PAHER University, Udaipur, and a
+                Diploma recipient in Business Information from Alexander College, Perth, she brings a global
+                perspective to career and skill development.
+              </p>
+
+              <p className="text-lg leading-relaxed">
+                As an academician, teacher, trainer, and NLP coach, Dr. Tewari has dedicated her career to empowering
+                individuals—whether students, professionals, or corporate leaders. She has designed transformative
+                workshops focused on self-awareness, communication, and professional growth. Her expertise in soft
+                skills training, behavioural assessments, and coaching methodologies bridges the gap between academia
+                and the corporate world.
+              </p>
+
+              <p className="text-lg leading-relaxed">
+                Beyond teaching, she has authored research papers, presented at international conferences, and
+                pioneered initiatives that enhance employability and leadership skills. Her research paper,
+                "Aspirations & Wants of Generation Z – A Study on the Workforce of the Future," presented at the
+                International Conference on Technology & Business Management (CFD Dubai, 2017), won the Outstanding
+                Paper Award.
+              </p>
+
+              <p className="text-lg leading-relaxed">
+                As the founder of stei, Dr. Tewari's mission is simple: to equip individuals with the confidence,
+                skills, and clarity they need to thrive in their careers and lives. With a holistic, results-driven
+                approach, she continues to shape the future of personal and professional development.
+              </p>
+            </div>
           </div>
         </div>
       </div>
