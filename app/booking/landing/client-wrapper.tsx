@@ -141,6 +141,7 @@ export default function ClientWrapper({ workshop }: ClientWrapperProps) {
           workshop={workshop}
           onBatchSelected={handleBatchSelected}
           onContinue={handleBatchSelectionComplete}
+          student_id= {studentData.id || ""}
         />
       )}
 

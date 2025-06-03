@@ -37,17 +37,76 @@ export default function PaymentDetails({
     })
   }, [studentData, workshopData, selectedBatch, orderId])
 
-  const handleProceedToPayment = () => {
-    setIsLoading(true)
+  // const handleProceedToPayment = () => {
+  //   setIsLoading(true)
 
+  //   try {
+  //     // Call the onProceed function without parameters
+  //     onProceed()
+  //   } catch (error) {
+  //     console.error("Error proceeding to payment:", error)
+  //     setIsLoading(false)
+  //   }
+  // }
+
+  const handleCashfreeFlow = async () => {
     try {
-      // Call the onProceed function without parameters
-      onProceed()
-    } catch (error) {
-      console.error("Error proceeding to payment:", error)
-      setIsLoading(false)
+      // Step 1: Load Cashfree SDK
+      if (!window.Cashfree) {
+        const script = document.createElement("script");
+        script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
+        script.async = true;
+        script.onload = () => {
+          console.log("Cashfree SDK loaded");
+        };
+        document.body.appendChild(script);
+  
+        await new Promise((resolve, reject) => {
+          const interval = setInterval(() => {
+            if (window.Cashfree) {
+              clearInterval(interval);
+              resolve(true);
+            }
+          }, 100);
+          setTimeout(() => reject("Cashfree SDK load timeout"), 5000);
+        });
+      }
+  
+      // Step 2: Create order and get session ID
+      const uniqueOrderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const res = await fetch("/api/payment/create-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          order_id: uniqueOrderId,
+          order_amount: workshopData.price,
+          customer_id: String(studentData.id || "anon"), // ✅ Force string
+          customer_phone: studentData.phone || "9999999999",
+          batchId: selectedBatch.id,
+          workshopId: workshopData.id,
+        }),
+      });
+      
+  
+      const data = await res.json();
+  
+      if (!data.success || !data.data?.payment_session_id) {
+        throw new Error(data.message || "Session creation failed");
+      }
+  
+      // Step 3: Launch checkout
+      const cashfree = window.Cashfree({ mode: "sandbox" });
+      await cashfree.checkout({
+        paymentSessionId: data.data.payment_session_id,
+        redirectTarget: "_self",
+      });
+  
+    } catch (err) {
+      console.error("Cashfree init failed", err);
+      alert("Payment gateway failed to load. Try again.");
     }
-  }
+  };
+  
 
   // Format the workshop title to match the design
   const formatTitle = (title: string | undefined) => {
@@ -220,7 +279,7 @@ export default function PaymentDetails({
 
           <div className="mt-6">
             <button
-              onClick={handleProceedToPayment}
+              onClick={handleCashfreeFlow}
               disabled={isLoading}
               className="w-full bg-[#D40F14] hover:bg-[#B00D11] text-white font-bold py-3 px-4 rounded-md transition-colors duration-300 disabled:opacity-70"
             >

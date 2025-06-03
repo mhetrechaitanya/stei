@@ -253,9 +253,7 @@ export default function BatchSelectionPopup({
                             {isFull ? (
                               <span className="font-medium text-gray-500">Batch Full</span>
                             ) : (
-                              <>
-                                <span className="font-medium text-[#D40F14]">{batch.slots - batch.enrolled}</span> slots
-                                left
+                              <>                                
                               </>
                             )}
                           </span>

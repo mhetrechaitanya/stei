@@ -269,10 +269,10 @@ export default function PaymentGateway({
       );
       return;
     }
-    if (!selectedMethod) {
-      setError("Please select a payment method");
-      return;
-    }
+    // if (!selectedMethod) {
+    //   setError("Please select a payment method");
+    //   return;
+    // }
     setIsLoading(true);
     setError("");
 
@@ -431,7 +431,7 @@ export default function PaymentGateway({
             <CreditCard className="h-6 w-6" />
           </div>
         </div>
-
+  
         {/* Card Content */}
         <div className="p-5">
           {isLoading ? (
@@ -496,186 +496,12 @@ export default function PaymentGateway({
                   </div>
                 </div>
               </div>
-
-              {/* Payment Method Options */}
-              <div>
-                <h4 className="text-base font-bold mb-3">
-                  Select Payment Method
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <button
-                    className={`p-3 border rounded-lg transition-colors flex flex-col items-center ${
-                      selectedMethod === "CREDIT_CARD"
-                        ? "border-[#D40F14] bg-red-50"
-                        : "border-gray-200 hover:bg-gray-50"
-                    }`}
-                    onClick={() => setSelectedMethod("CREDIT_CARD")}
-                  >
-                    <CreditCard className="h-5 w-5 mb-1" />
-                    <span className="text-sm font-medium">Credit Card</span>
-                  </button>
-                  <button
-                    className={`p-3 border rounded-lg transition-colors flex flex-col items-center ${
-                      selectedMethod === "UPI"
-                        ? "border-[#D40F14] bg-red-50"
-                        : "border-gray-200 hover:bg-gray-50"
-                    }`}
-                    onClick={() => setSelectedMethod("UPI")}
-                  >
-                    <svg
-                      className="h-5 w-5 mb-1"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M12 4L3 8L12 12L21 8L12 4Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M3 16L12 20L21 16"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M3 12L12 16L21 12"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <span className="text-sm font-medium">UPI</span>
-                  </button>
-                  <button
-                    className={`p-3 border rounded-lg transition-colors flex flex-col items-center ${
-                      selectedMethod === "NET_BANKING"
-                        ? "border-[#D40F14] bg-red-50"
-                        : "border-gray-200 hover:bg-gray-50"
-                    }`}
-                    onClick={() => setSelectedMethod("NET_BANKING")}
-                  >
-                    <svg
-                      className="h-5 w-5 mb-1"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M4 10V17C4 18.1046 4.89543 19 6 19H18C19.1046 19 20 18.1046 20 17V10"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M12 3L21 9H3L12 3Z"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M12 15H12.01"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <span className="text-sm font-medium">Net Banking</span>
-                  </button>
-                  <button
-                    className={`p-3 border rounded-lg transition-colors flex flex-col items-center ${
-                      selectedMethod === "WALLET"
-                        ? "border-[#D40F14] bg-red-50"
-                        : "border-gray-200 hover:bg-gray-50"
-                    }`}
-                    onClick={() => setSelectedMethod("WALLET")}
-                  >
-                    <svg
-                      className="h-5 w-5 mb-1"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <rect
-                        x="3"
-                        y="6"
-                        width="18"
-                        height="15"
-                        rx="2"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M16 14C16.5523 14 17 13.5523 17 13C17 12.4477 16.5523 12 16 12C15.4477 12 15 12.4477 15 13C15 13.5523 15.4477 14 16 14Z"
-                        fill="currentColor"
-                        stroke="currentColor"
-                        strokeWidth="0.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M3 10H21"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M7 6V3"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M17 6V3"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <span className="text-sm font-medium">Wallet</span>
-                  </button>
-                </div>
+  
+              {/* Redirecting Notice */}
+              <div className="text-sm text-gray-500 text-center pt-4">
+                Redirecting to secure payment page...
               </div>
-
-              {/* Error message if no payment method selected */}
-              {error && !error.includes("Payment") && (
-                <div className="p-2 text-red-600 text-sm flex items-center gap-1">
-                  <AlertTriangle className="h-4 w-4" />
-                  <span>{error}</span>
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex gap-3 pt-3">
-                <button
-                  onClick={onCancel}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors text-sm"
-                >
-                  Cancel
-                </button>
-
-                <button
-                  onClick={processCashfreePayment}
-                  className="flex-1 px-4 py-2 bg-[#D40F14] text-white rounded-md hover:bg-[#B00D11] transition-colors text-sm"
-                  disabled={!selectedMethod}
-                >
-                  Pay ₹{amount.toFixed(2)}
-                </button>
-              </div>
-
+  
               {/* Payment Security Note */}
               <div className="flex items-center justify-center gap-1 text-xs text-gray-500 pt-3">
                 <svg
@@ -713,5 +539,5 @@ export default function PaymentGateway({
         </div>
       </div>
     </>
-  );
+  )  
 }

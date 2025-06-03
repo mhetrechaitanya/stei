@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Users, Star, CheckCircle } from "lucide-react";
 import { getWorkshops } from "@/lib/data-service";
 // Import the error boundary wrapper
 import ErrorBoundaryWrapper from "@/app/components/error-boundary-wrapper";
@@ -11,26 +11,48 @@ import ClientWrapper from "./client-wrapper";
 export function WorkshopDetails({ workshop }) {
   if (!workshop) {
     return (
-      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-        <p className="text-yellow-700">Workshop details are not available.</p>
+      <div className="p-6 bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-400 rounded-xl shadow-sm">
+        <div className="flex items-center">
+          <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mr-4">
+            <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <p className="text-amber-800 font-medium">Workshop details are not available.</p>
+        </div>
       </div>
     );
   }
 
-  // console.log("in page.tsx ", workshop);
-
   return (
-    <div className="mb-8">
-      <h3 className="text-xl font-bold mb-4">About Workshop</h3>
-      <p className="text-gray-600 mb-6">
-        {workshop.description || "No description available."}
-      </p>
+    <div className="mb-10 space-y-8">
+      {/* About Workshop */}
+      <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl p-8 border border-slate-200">
+        <div className="flex items-center mb-6">
+          <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            </svg>
+          </div>
+          <h3 className="text-2xl font-bold text-slate-800">About Workshop</h3>
+        </div>
+        <p className="text-slate-600 text-lg leading-relaxed">
+          {workshop.description || "No description available."}
+        </p>
+      </div>
 
       {/* About Mentor */}
-      <div className="bg-gray-50 p-6 rounded-lg mb-6">
-        <h3 className="text-lg font-bold mb-3">About Mentor</h3>
-        <div className="flex items-center">
-          <div className="w-16 h-16 bg-gray-200 rounded-full mr-4 overflow-hidden relative">
+      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-200 shadow-sm">
+        <div className="flex items-center mb-6">
+          <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <h3 className="text-2xl font-bold text-slate-800">About Mentor</h3>
+        </div>
+        <div className="flex items-start space-x-6">
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-200 to-pink-200 rounded-2xl overflow-hidden relative shadow-lg flex-shrink-0">
             {workshop.mentor?.image ? (
               <Image
                 src="/placeholder.svg?height=100&width=100"
@@ -39,68 +61,118 @@ export function WorkshopDetails({ workshop }) {
                 className="object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-gray-300"></div>
+              <div className="w-full h-full bg-gradient-to-br from-purple-300 to-pink-300 flex items-center justify-center">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
             )}
           </div>
-          <div>
-            <p className="font-medium">
+          <div className="flex-1">
+            <h4 className="text-xl font-bold text-slate-800 mb-1">
               {workshop.mentor?.name || "Expert Mentor"}
-            </p>
-            <p className="text-gray-500">
+            </h4>
+            <p className="text-purple-600 font-medium mb-3">
               {workshop.mentor?.title || "Industry Professional"}
+            </p>
+            <p className="text-slate-600 leading-relaxed">
+              {workshop.mentor?.bio ||
+                "Our expert mentor brings years of industry experience to help you master new skills."}
             </p>
           </div>
         </div>
-        <p className="mt-3 text-gray-600">
-          {workshop.mentor?.bio ||
-            "Our expert mentor brings years of industry experience to help you master new skills."}
-        </p>
       </div>
 
       {/* Batch Information */}
-      <div className="mb-6">
-        <h3 className="text-lg font-bold mb-3">Available Batches</h3>
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-200 shadow-sm">
+        <div className="flex items-center mb-6">
+          <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-4">
+            <Calendar className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-slate-800">Available Batches</h3>
+        </div>
         {workshop.batches && workshop.batches.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {workshop.batches.map((batch, index) => {
               console.log(batch); // Log each batch object
+              const slotsLeft = typeof batch.slots === "number" && typeof batch.enrolled === "number"
+                ? batch.slots - batch.enrolled
+                : "Limited";
+              
               return (
                 <div
                   key={index}
-                  className="border border-gray-200 rounded-lg p-4"
+                  className="bg-white rounded-xl p-6 border border-green-200 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
                 >
-                  <p className="font-medium">{batch.batch_name}</p>
-                  <p className="text-gray-600">
-                    {batch.start_date || "Date TBD"},{" "}
-                    {batch.start_time || "Time TBD"}
-                  </p>
-                  <p className="text-sm mt-2">
-                    <span className="text-[#D40F14] font-medium">
-                      {typeof batch.slots === "number" &&
-                      typeof batch.enrolled === "number"
-                        ? batch.slots - batch.enrolled
-                        : "Limited"}
-                    </span>{" "}
-                    slots left
-                  </p>
+                  <div className="flex items-start justify-between mb-4">
+                    <h4 className="font-bold text-slate-800 text-lg">{batch.batch_name}</h4>
+                    <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                      Batch {index + 1}
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center text-slate-600">
+                      <Calendar className="w-4 h-4 mr-2 text-green-500" />
+                      <span>{batch.start_date || "Date TBD"}</span>
+                    </div>
+                    <div className="flex items-center text-slate-600">
+                      <Clock className="w-4 h-4 mr-2 text-green-500" />
+                      <span>{batch.start_time || "Time TBD"}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Users className="w-4 h-4 mr-2 text-red-500" />
+                      <span className="text-red-600 font-bold text-lg">
+                        {slotsLeft}
+                      </span>
+                      <span className="text-slate-600 ml-1">slots left</span>
+                    </div>
+                  </div>
                 </div>
               );
             })}
           </div>
         ) : (
-          <p className="text-gray-500">No batches available at the moment.</p>
+          <div className="bg-white rounded-xl p-8 border border-dashed border-green-300 text-center">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Calendar className="w-8 h-8 text-green-500" />
+            </div>
+            <p className="text-slate-500 text-lg">No batches available at the moment.</p>
+            <p className="text-slate-400 text-sm mt-2">Check back soon for new batch announcements!</p>
+          </div>
         )}
       </div>
 
       {/* Testimonials */}
       {workshop.testimonials && workshop.testimonials.length > 0 && (
-        <div className="mb-8">
-          <h3 className="text-lg font-bold mb-3">
-            Feedback from Previous Participants
-          </h3>
-          <div className="bg-gray-50 p-4 rounded-lg border-l-4 border-[#D40F14]">
-            <p className="italic mb-2">{workshop.testimonials[0].text}</p>
-            <p className="font-medium">{workshop.testimonials[0].name}</p>
+        <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-8 border border-orange-200 shadow-sm">
+          <div className="flex items-center mb-6">
+            <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-4">
+              <Star className="w-6 h-6 text-white fill-current" />
+            </div>
+            <h3 className="text-2xl font-bold text-slate-800">Feedback from Previous Participants</h3>
+          </div>
+          <div className="bg-white rounded-xl p-6 border-l-4 border-orange-400 shadow-sm">
+            <div className="flex items-start space-x-4">
+              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-slate-700 italic text-lg leading-relaxed mb-3">
+                  "{workshop.testimonials[0].text}"
+                </p>
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-red-400 rounded-full flex items-center justify-center">
+                    <span className="text-white text-sm font-bold">
+                      {workshop.testimonials[0].name?.charAt(0) || "A"}
+                    </span>
+                  </div>
+                  <span className="font-bold text-slate-800">{workshop.testimonials[0].name}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -132,17 +204,22 @@ export default async function BookingLandingPage({
   // Handle errors
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-50">
+        <div className="bg-white p-10 rounded-2xl shadow-2xl max-w-md w-full text-center border border-red-100">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
           <h2 className="text-2xl font-bold text-red-600 mb-4">
             Unable to load workshop data
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-slate-600 mb-8 leading-relaxed">
             We're experiencing technical difficulties. Please try again later.
           </p>
           <Link
             href="/workshops"
-            className="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-red-700"
+            className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-red-500 to-red-600 px-6 py-3 text-sm font-medium text-white shadow-lg transition-all hover:from-red-600 hover:to-red-700 hover:shadow-xl transform hover:scale-105"
           >
             Return to Workshops
           </Link>
@@ -154,15 +231,20 @@ export default async function BookingLandingPage({
   // Handle case where no workshops are found
   if (!workshops || workshops.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-          <h2 className="text-2xl font-bold mb-4">No Workshops Available</h2>
-          <p className="text-gray-600 mb-6">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+        <div className="bg-white p-10 rounded-2xl shadow-2xl max-w-md w-full text-center border border-slate-200">
+          <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold mb-4 text-slate-800">No Workshops Available</h2>
+          <p className="text-slate-600 mb-8 leading-relaxed">
             There are currently no workshops available for registration.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-red-700"
+            className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-3 text-sm font-medium text-white shadow-lg transition-all hover:from-slate-700 hover:to-slate-800 hover:shadow-xl transform hover:scale-105"
           >
             Return to Home
           </Link>
@@ -179,17 +261,22 @@ export default async function BookingLandingPage({
   // Ensure we have a valid workshop
   if (!selectedWorkshop) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-orange-50">
+        <div className="bg-white p-10 rounded-2xl shadow-2xl max-w-md w-full text-center border border-orange-200">
+          <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg className="w-10 h-10 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.009-5.824-2.562M15 17H9v-2l1.586-1.586a2 2 0 012.828 0L15 15v2z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-orange-600 mb-4">
             Workshop Not Found
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-slate-600 mb-8 leading-relaxed">
             The requested workshop could not be found.
           </p>
           <Link
             href="/workshops"
-            className="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow transition-colors hover:bg-red-700"
+            className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 text-sm font-medium text-white shadow-lg transition-all hover:from-orange-600 hover:to-red-600 hover:shadow-xl transform hover:scale-105"
           >
             Browse Workshops
           </Link>
@@ -219,9 +306,9 @@ export default async function BookingLandingPage({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Hero Section */}
-      <div className="relative h-[200px]">
+      <div className="relative h-[300px] overflow-hidden">
         <Image
           src="/placeholder.svg?height=400&width=600"
           alt="Workshop Registration"
@@ -229,96 +316,109 @@ export default async function BookingLandingPage({
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/50" />
         <div className="absolute inset-0 flex flex-col justify-center px-8 md:px-16 lg:px-24">
-          <div className="max-w-3xl">
+          <div className="max-w-4xl">
             <Link
               href="/workshops"
-              className="inline-flex items-center text-white/80 hover:text-white mb-2 transition-colors"
+              className="inline-flex items-center text-white/90 hover:text-white mb-4 transition-all duration-200 hover:translate-x-1 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Workshops
             </Link>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">
-              Register for {sanitizedWorkshop.title}
+            <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
+              Register for{" "}
+              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                {sanitizedWorkshop.title}
+              </span>
             </h1>
+            <p className="text-white/80 text-lg md:text-xl max-w-2xl">
+              Join our expert-led workshop and enhance your skills with hands-on learning
+            </p>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <h2 className="text-2xl font-bold text-center mb-8">
-              Workshop Registration
-            </h2>
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-10 border border-white/20">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-4">
+                Workshop Registration
+              </h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
+            </div>
 
             {/* Workshop Info - Wrapped in ErrorBoundary */}
             <ErrorBoundaryWrapper>
               <WorkshopDetails workshop={sanitizedWorkshop} />
             </ErrorBoundaryWrapper>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-8 mt-12">
               {/* New Registration */}
-              <div className="bg-blue-50 rounded-lg p-8 flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+              <div className="group bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl p-8 border border-blue-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-10 w-10 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4 text-slate-800">New Registration</h3>
+                  <p className="mb-8 text-slate-600 leading-relaxed">
+                    If you're new to our platform, register here to book a workshop and start your learning journey
+                  </p>
+                  <Link
+                    href={`/student-registration`}
+                    className="inline-flex items-center justify-center w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4v16m8-8H4"
-                    />
-                  </svg>
+                    <CheckCircle className="w-5 h-5 mr-2" />
+                    Register Now
+                  </Link>
                 </div>
-                <h3 className="text-xl font-bold mb-3">New Registration</h3>
-                <p className="mb-6 text-gray-600">
-                  If you're new to our platform, register here to book a
-                  workshop
-                </p>
-                <Link
-                  href={`/student-registration`}
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 rounded-md transition-colors"
-                >
-                  Register Now
-                </Link>
               </div>
 
               {/* Already Registered */}
-              <div className="bg-red-50 rounded-lg p-8 flex flex-col items-center text-center">
-                <div className="w-16 h-16 bg-[#D40F14] rounded-full flex items-center justify-center mb-4">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-8 w-8 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+              <div className="group bg-gradient-to-br from-red-50 to-pink-100 rounded-2xl p-8 border border-red-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-10 w-10 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold mb-4 text-slate-800">Already Registered</h3>
+                  <p className="mb-8 text-slate-600 leading-relaxed">
+                    If you've already registered with us, use this option to book a workshop slot and continue learning
+                  </p>
+                  <button
+                    className="inline-flex items-center justify-center w-full bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    id="continue-to-payment-btn"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
+                    <Users className="w-5 h-5 mr-2" />
+                    Continue to Payment
+                  </button>
                 </div>
-                <h3 className="text-xl font-bold mb-3">Already Registered</h3>
-                <p className="mb-6 text-gray-600">
-                  If you've already registered with us, use this option to book
-                  a workshop slot
-                </p>
-                <button
-                  className="w-full bg-[#D40F14] hover:bg-[#B00D11] text-white font-medium py-3 px-4 rounded-md transition-colors"
-                  id="continue-to-payment-btn"
-                >
-                  Continue to Payment
-                </button>
               </div>
             </div>
           </div>

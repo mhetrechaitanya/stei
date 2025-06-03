@@ -129,7 +129,7 @@ export default function PaymentModal({
           </div>
 
           <div className="mb-6">
-            <h3 className="font-bold mb-4">Select Payment Method</h3>
+            <h3 className="font-bold mb-4"></h3>
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div
                 className="border rounded-lg p-4 flex flex-col items-center cursor-pointer hover:bg-gray-50 hover:border-[#D40F14] transition-colors"
