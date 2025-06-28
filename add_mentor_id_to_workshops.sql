@@ -1,4 +1,25 @@
--- Mentors Table Schema
+-- Add mentor_id column to workshops table if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM information_schema.columns 
+        WHERE table_name = 'workshops' 
+        AND column_name = 'mentor_id'
+    ) THEN
+        -- Add mentor_id column
+        ALTER TABLE workshops ADD COLUMN mentor_id UUID;
+        
+        -- Create index for faster lookups
+        CREATE INDEX idx_workshops_mentor_id ON workshops(mentor_id);
+        
+        RAISE NOTICE 'Added mentor_id column to workshops table';
+    ELSE
+        RAISE NOTICE 'mentor_id column already exists in workshops table';
+    END IF;
+END $$;
+
+-- Create mentors table if it doesn't exist
 CREATE TABLE IF NOT EXISTS mentors (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
@@ -12,52 +33,7 @@ CREATE TABLE IF NOT EXISTS mentors (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Workshops Table Schema
-CREATE TABLE IF NOT EXISTS workshops (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  title TEXT NOT NULL,
-  slug TEXT NOT NULL UNIQUE,
-  description TEXT NOT NULL,
-  image TEXT,
-  sessions INTEGER DEFAULT 4,
-  duration TEXT DEFAULT '2 hours per session',
-  capacity INTEGER DEFAULT 15,
-  price INTEGER DEFAULT 4999,
-  featured BOOLEAN DEFAULT FALSE,
-  status TEXT DEFAULT 'active',
-  benefits TEXT[] DEFAULT ARRAY['Learn valuable skills'],
-  workshop_code TEXT UNIQUE,
-  zoom_link TEXT,
-  mentor_id UUID REFERENCES mentors(id) ON DELETE SET NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Workshop Batches Table Schema
-CREATE TABLE IF NOT EXISTS workshop_batches (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  workshop_id UUID NOT NULL REFERENCES workshops(id) ON DELETE CASCADE,
-  date TEXT NOT NULL,
-  time TEXT NOT NULL,
-  slots INTEGER DEFAULT 15,
-  enrolled INTEGER DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Workshop Affiliates Table Schema
-CREATE TABLE IF NOT EXISTS workshop_affiliates (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  workshop_id UUID NOT NULL REFERENCES workshops(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  code TEXT NOT NULL,
-  commission INTEGER NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  UNIQUE(workshop_id, code)
-);
-
--- Insert default mentor (Dr. Sandhya Tewari)
+-- Insert default mentor (Dr. Sandhya Tewari) if not exists
 INSERT INTO mentors (name, title, bio, image, email) VALUES (
   'Dr. Sandhya Tewari',
   'PhD in Management, NLP Coach, Corporate Trainer',
@@ -65,3 +41,26 @@ INSERT INTO mentors (name, title, bio, image, email) VALUES (
   'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1573993472182%20%281%29.jpg-OVm1fWafCW2a4vffSUJCXikiuvnhme.jpeg',
   'sandhya@stei.com'
 ) ON CONFLICT (id) DO NOTHING;
+
+-- Update existing workshops to have the default mentor
+UPDATE workshops 
+SET mentor_id = (SELECT id FROM mentors WHERE name = 'Dr. Sandhya Tewari' LIMIT 1)
+WHERE mentor_id IS NULL;
+
+-- Add foreign key constraint if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM information_schema.table_constraints 
+        WHERE constraint_name = 'workshops_mentor_id_fkey'
+    ) THEN
+        ALTER TABLE workshops 
+        ADD CONSTRAINT workshops_mentor_id_fkey 
+        FOREIGN KEY (mentor_id) REFERENCES mentors(id) ON DELETE SET NULL;
+        
+        RAISE NOTICE 'Added foreign key constraint for mentor_id';
+    ELSE
+        RAISE NOTICE 'Foreign key constraint already exists';
+    END IF;
+END $$; 

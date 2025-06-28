@@ -95,8 +95,24 @@ export async function getWorkshopById(id) {
       }
     }
 
-    // Fetch the workshop
-    const { data, error } = await supabase.from("workshops").select("*").eq("id", id).single()
+    // Fetch the workshop with mentor information
+    const { data, error } = await supabase
+      .from("workshops")
+      .select(`
+        *,
+        mentor:mentor_id (
+          id,
+          name,
+          title,
+          bio,
+          image,
+          email,
+          phone,
+          linkedin_url
+        )
+      `)
+      .eq("id", id)
+      .single()
 
     if (error) {
       console.error(`Error fetching workshop ${id}:`, error)
@@ -134,10 +150,10 @@ export async function getWorkshopById(id) {
     console.log(`Successfully fetched workshop: ${processedWorkshop.title}`)
     return { data: processedWorkshop, error: null }
   } catch (error) {
-    console.error(`Error in getWorkshopById for ${id}:`, error)
+    console.error(`Exception in getWorkshopById for ${id}:`, error)
     return {
       data: null,
-      error: `Failed to fetch workshop: ${error.message}`,
+      error: error.message || "Failed to fetch workshop",
     }
   }
 }

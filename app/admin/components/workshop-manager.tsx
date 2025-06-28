@@ -15,10 +15,19 @@ interface NewWorkshop {
   category: string
   image: string
   slug: string
+  mentor_id?: string
+}
+
+interface Mentor {
+  id: string
+  name: string
+  title?: string
+  email?: string
 }
 
 export default function WorkshopManager() {
   const [workshops, setWorkshops] = useState<Workshop[]>([])
+  const [mentors, setMentors] = useState<Mentor[]>([])
   const [categories, setCategories] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -76,9 +85,26 @@ export default function WorkshopManager() {
     }
   }
 
+  // Fetch mentors
+  const fetchMentors = async () => {
+    try {
+      const response = await fetch("/api/mentors")
+      if (!response.ok) {
+        throw new Error(`Failed to fetch mentors: ${response.status}`)
+      }
+
+      const data = await response.json()
+      setMentors(data || [])
+    } catch (error: any) {
+      console.error("Error fetching mentors:", error.message)
+      // Don't set error state here to avoid blocking the UI
+    }
+  }
+
   useEffect(() => {
     fetchWorkshops()
     fetchCategories()
+    fetchMentors()
   }, [])
 
   // Add new workshop
@@ -465,6 +491,22 @@ export default function WorkshopManager() {
                 ))}
               </select>
             </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Mentor</label>
+            <select
+              value={newWorkshop.mentor_id || ""}
+              onChange={(e) => setNewWorkshop({ ...newWorkshop, mentor_id: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
+            >
+              <option value="">Select a mentor</option>
+              {mentors.map((mentor) => (
+                <option key={mentor.id} value={mentor.id}>
+                  {mentor.name} {mentor.title ? `(${mentor.title})` : ""}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="mb-4">

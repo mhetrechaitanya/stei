@@ -205,7 +205,16 @@ export const getWorkshopById = cache(async (id: string) => {
       .select(`
         *,
         batches (*),
-        mentor:mentor_id (*),
+        mentor:mentor_id (
+          id,
+          name,
+          title,
+          bio,
+          image,
+          email,
+          phone,
+          linkedin_url
+        ),
         testimonials (*)
       `)
       .eq("id", id)

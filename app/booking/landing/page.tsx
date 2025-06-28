@@ -8,7 +8,36 @@ import ErrorBoundaryWrapper from "@/app/components/error-boundary-wrapper";
 // Import the new client component
 import ClientWrapper from "./client-wrapper";
 
-export function WorkshopDetails({ workshop }) {
+interface Mentor {
+  id?: string;
+  name?: string;
+  title?: string;
+  bio?: string;
+  image?: string;
+  email?: string;
+}
+
+interface WorkshopBatch {
+  id?: string;
+  batch_name?: string;
+  start_date?: string;
+  start_time?: string;
+  slots?: number;
+  enrolled?: number;
+}
+
+interface Workshop {
+  id?: string;
+  title?: string;
+  description?: string;
+  price?: number;
+  image?: string;
+  batches?: WorkshopBatch[];
+  mentor?: Mentor;
+  testimonials?: any[];
+}
+
+export function WorkshopDetails({ workshop }: { workshop: Workshop }) {
   if (!workshop) {
     return (
       <div className="p-6 bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-400 rounded-xl shadow-sm">
@@ -57,8 +86,8 @@ export function WorkshopDetails({ workshop }) {
           <div className="md:w-1/3">
             <div className="relative h-[400px] w-full rounded-2xl overflow-hidden shadow-xl">
               <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1573993472182%20%281%29.jpg-OVm1fWafCW2a4vffSUJCXikiuvnhme.jpeg"
-                alt="Dr. Sandhya Tewari"
+                src={workshop.mentor?.image || "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1573993472182%20%281%29.jpg-OVm1fWafCW2a4vffSUJCXikiuvnhme.jpeg"}
+                alt={workshop.mentor?.name || "Workshop Mentor"}
                 fill
                 className="object-cover"
               />
@@ -67,37 +96,29 @@ export function WorkshopDetails({ workshop }) {
 
           {/* Right side - Information */}
           <div className="md:w-2/3">
-            <h4 className="text-3xl font-bold text-slate-800 mb-6">About Dr. Sandhya Tewari</h4>
+            <h4 className="text-3xl font-bold text-slate-800 mb-6">
+              About {workshop.mentor?.name || "Our Expert Mentor"}
+            </h4>
 
             <div className="space-y-4 text-slate-700">
-              <p className="text-lg leading-relaxed">
-                Dr. Sandhya Tewari is a seasoned professional with over 30 years of experience in education, human
-                resources, and personal development. A PhD holder in Management from PAHER University, Udaipur, and a
-                Diploma recipient in Business Information from Alexander College, Perth, she brings a global
-                perspective to career and skill development.
-              </p>
-
-              <p className="text-lg leading-relaxed">
-                As an academician, teacher, trainer, and NLP coach, Dr. Tewari has dedicated her career to empowering
-                individuals—whether students, professionals, or corporate leaders. She has designed transformative
-                workshops focused on self-awareness, communication, and professional growth. Her expertise in soft
-                skills training, behavioural assessments, and coaching methodologies bridges the gap between academia
-                and the corporate world.
-              </p>
-
-              <p className="text-lg leading-relaxed">
-                Beyond teaching, she has authored research papers, presented at international conferences, and
-                pioneered initiatives that enhance employability and leadership skills. Her research paper,
-                "Aspirations & Wants of Generation Z – A Study on the Workforce of the Future," presented at the
-                International Conference on Technology & Business Management (CFD Dubai, 2017), won the Outstanding
-                Paper Award.
-              </p>
-
-              <p className="text-lg leading-relaxed">
-                As the founder of stei, Dr. Tewari's mission is simple: to equip individuals with the confidence,
-                skills, and clarity they need to thrive in their careers and lives. With a holistic, results-driven
-                approach, she continues to shape the future of personal and professional development.
-              </p>
+              {workshop.mentor?.bio ? (
+                <p className="text-lg leading-relaxed">
+                  {workshop.mentor.bio}
+                </p>
+              ) : (
+                <>
+                  <p className="text-lg leading-relaxed">
+                    Our expert mentor brings years of industry experience to help you master new skills and advance your career. 
+                    With a proven track record of empowering individuals through personalized guidance and practical insights, 
+                    they are dedicated to your professional growth and success.
+                  </p>
+                  <p className="text-lg leading-relaxed">
+                    Through interactive sessions and hands-on learning, you'll gain valuable insights, develop essential skills, 
+                    and build the confidence needed to excel in your chosen field. Our mentor's expertise spans various domains, 
+                    ensuring you receive comprehensive guidance tailored to your specific needs and goals.
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -275,7 +296,7 @@ export default async function BookingLandingPage({
 
   // Find the selected workshop or use the first one
   const selectedWorkshop =
-    workshops.find((w) => w.id.toString() === workshopId.toString()) ||
+    workshops.find((w: any) => w.id.toString() === workshopId.toString()) ||
     workshops[0];
 
   // Ensure we have a valid workshop
