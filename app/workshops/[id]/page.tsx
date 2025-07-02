@@ -5,7 +5,7 @@ import { Calendar, Clock, Users, CheckCircle, ArrowLeft } from "lucide-react"
 import Header from "@/components/header"
 import { getWorkshopById } from "@/lib/workshop-service"
 
-export default async function WorkshopDetailPage({ params }) {
+export default async function WorkshopDetailPage({ params }: { params: { id: string } }) {
   const { id } = params
   const { data: workshop, error } = await getWorkshopById(id)
 
@@ -62,7 +62,7 @@ export default async function WorkshopDetailPage({ params }) {
                       <h3 className="text-xl font-bold mt-6 mb-4">What You'll Learn</h3>
                       <ul className="space-y-2">
                         {Array.isArray(workshop.curriculum) ? (
-                          workshop.curriculum.map((item, index) => (
+                          workshop.curriculum.map((item: string, index: number) => (
                             <li key={index} className="flex items-start">
                               <CheckCircle className="h-5 w-5 text-[#D40F14] mr-2 flex-shrink-0 mt-0.5" />
                               <span>{item}</span>
@@ -113,7 +113,7 @@ export default async function WorkshopDetailPage({ params }) {
 
                 {workshop.testimonials && workshop.testimonials.length > 0 ? (
                   <div className="space-y-6">
-                    {workshop.testimonials.map((testimonial, index) => (
+                    {workshop.testimonials.map((testimonial: any, index: number) => (
                       <div key={index} className="border-l-4 border-[#D40F14] pl-4 py-2">
                         <p className="italic mb-2">{testimonial.text}</p>
                         <div className="flex items-center">
@@ -178,14 +178,20 @@ export default async function WorkshopDetailPage({ params }) {
                   <h3 className="text-xl font-bold mb-4">Upcoming Batches</h3>
                   {workshop.batches && workshop.batches.length > 0 ? (
                     <div className="space-y-3">
-                      {workshop.batches.map((batch, index) => (
+                      {workshop.batches.map((batch: any, index: number) => (
                         <div key={index} className="bg-gray-50 p-3 rounded-md">
-                          <div className="font-medium">{batch.date}</div>
+                          <div className="font-medium">
+                            {batch.start_date && batch.end_date
+                              ? `${new Date(batch.start_date).toLocaleDateString('en-GB')} - ${new Date(batch.end_date).toLocaleDateString('en-GB')}`
+                              : batch.date
+                                ? new Date(batch.date).toLocaleDateString('en-GB')
+                                : 'Date TBD'}
+                          </div>
                           <div className="text-sm text-gray-600 mb-1">{batch.time}</div>
                           <div className="text-sm">
                             <span className="font-medium text-[#D40F14]">
                               {(batch.slots || 0) - (batch.enrolled || 0)}
-                            </span>{" "}
+                            </span>{' '}
                             slots left
                           </div>
                         </div>

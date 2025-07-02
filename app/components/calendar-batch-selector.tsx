@@ -25,6 +25,9 @@ import {
   isAfter,
 } from "date-fns";
 import { toast } from "sonner";
+import PaymentDetails from "../booking/landing/payment-details";
+import PaymentPopupSuccessStyle from "../booking/payment/payment-popup-success-style";
+import { parseFlexibleDate } from "@/lib/date-utils";
 // import router from "next/router";
 
 interface Batch {
@@ -81,6 +84,8 @@ export default function CalendarBatchSelector({
     end: Date | null;
   }>({ start: null, end: null });
   const router = useRouter();
+  const [showPaymentDetails, setShowPaymentDetails] = useState(false);
+  const [showFreePopup, setShowFreePopup] = useState(false);
 
   useEffect(() => {
     if (workshop?.batches && Array.isArray(workshop.batches)) {
@@ -155,48 +160,12 @@ export default function CalendarBatchSelector({
     }
   }, [workshop]);
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (!selectedBatch) return;
-    setIsLoading(true);
-    console.log("Selected Batch:", selectedBatch);
-    console.log("student id:", student_id);
-    console.log("workshop id:", workshop.id);
-
-    if (Number(workshop.price) === 0) {
-      try {
-        const orderId = `FREE-${Date.now()}`;
-        const res = await fetch("/api/enrollment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            studentId: student_id,
-            workshopId: workshop.id,
-            batchId: selectedBatch.id,
-            orderId,
-            amount: 0,
-            paymentStatus: "completed",
-          }),
-        });
-        const result = await res.json();
-        console.log("Free enrollment response:", result);
-        // onContinue(selectedBatch);
-
-        if (result.success) {
-          toast.success("Workshop enrolled! Redirecting...");
-          setTimeout(() => {
-            router.push("/workshops");
-          }, 2000);
-        } else {
-          console.error("Free enrollment failed:", result.message);
-          alert("Enrollment failed. Please try again.");
-        }
-      } catch (error) {
-        console.error("Free enrollment failed:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    if (workshop.price === 0) {
+      setShowFreePopup(true);
     } else {
-      onContinue(selectedBatch);
+      setShowPaymentDetails(true);
     }
   };
 
@@ -234,147 +203,185 @@ export default function CalendarBatchSelector({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fadeIn">
-      <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-auto p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">Select a Batch</h2>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-100"
-            aria-label="Close"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <h3 className="text-lg font-semibold mb-4">{workshop.title}</h3>
-
-        {/* Calendar Header */}
-        <div className="flex items-center justify-between mb-4">
-          <button
-            onClick={prevMonth}
-            className="p-2 hover:bg-gray-100 rounded-full"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <h4 className="text-xl font-bold">
-            {format(currentMonth, "MMMM yyyy")}
-          </h4>
-          <button
-            onClick={nextMonth}
-            className="p-2 hover:bg-gray-100 rounded-full"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-2">
-          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-            <div
-              key={day}
-              className="text-center text-sm font-medium text-gray-500"
+    <>
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fadeIn">
+        <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-auto p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">Select a Batch</h2>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-full hover:bg-gray-100"
+              aria-label="Close"
             >
-              {day}
-            </div>
-          ))}
+              <X className="h-5 w-5" />
+            </button>
+          </div>
 
-          {Array.from({ length: startOfMonth(currentMonth).getDay() }).map(
-            (_, idx) => (
-              <div key={idx}></div>
-            )
+          <h3 className="text-lg font-semibold mb-4">{workshop.title}</h3>
+
+          {/* Calendar Header */}
+          <div className="flex items-center justify-between mb-4">
+            <button
+              onClick={prevMonth}
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <h4 className="text-xl font-bold">
+              {format(currentMonth, "MMMM yyyy")}
+            </h4>
+            <button
+              onClick={nextMonth}
+              className="p-2 hover:bg-gray-100 rounded-full"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Calendar Grid */}
+          <div className="grid grid-cols-7 gap-2">
+            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+              <div
+                key={day}
+                className="text-center text-sm font-medium text-gray-500"
+              >
+                {day}
+              </div>
+            ))}
+
+            {Array.from({ length: startOfMonth(currentMonth).getDay() }).map(
+              (_, idx) => (
+                <div key={idx}></div>
+              )
+            )}
+
+            {eachDayOfInterval({
+              start: startOfMonth(currentMonth),
+              end: endOfMonth(currentMonth),
+            }).map((date) => {
+              const dateKey = format(date, "yyyy-MM-dd");
+              const isSelectable =
+                isDateInRange(date) && hasAvailableBatches(date);
+              const isSelected = selectedDate && isSameDay(date, selectedDate);
+
+              return (
+                <button
+                  key={date.toString()}
+                  onClick={() => isSelectable && handleDateClick(date)}
+                  className={`h-12 rounded-md text-sm flex items-center justify-center transition-colors
+                    ${
+                      isSelectable
+                        ? isSelected
+                          ? "bg-[#D40F14] text-white font-bold"
+                          : "bg-[#FFF5F5] text-[#D40F14] hover:bg-[#FFECEC]"
+                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    }`}
+                >
+                  {format(date, "d")}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Batches */}
+          {selectedDate && (
+            <div className="mt-6">
+              <h4 className="text-md font-semibold mb-2">
+                Batches for {format(selectedDate, "MMM d, yyyy")}:
+              </h4>
+              <div className="grid grid-cols-1 gap-4">
+                {batchesByDate[format(selectedDate, "yyyy-MM-dd")]?.map(
+                  (batch) => {
+                    const isSelected = selectedBatch?.id === batch.id;
+                    const start = batch.start_date ? parseFlexibleDate(batch.start_date) : null;
+                    const end = batch.end_date ? parseFlexibleDate(batch.end_date) : null;
+                    const single = batch.date ? parseFlexibleDate(batch.date) : null;
+                    return (
+                      <div
+                        key={batch.id}
+                        className={`p-4 border rounded-lg cursor-pointer transition-all
+                        ${
+                          isSelected
+                            ? "border-[#D40F14] bg-[#FFF5F5]"
+                            : "hover:border-gray-300"
+                        }`}
+                        onClick={() => handleBatchSelect(batch)}
+                      >
+                        <p className="font-medium">
+                          Date: {start && end
+                            ? `${start.toLocaleDateString('en-GB')} - ${end.toLocaleDateString('en-GB')}`
+                            : single
+                              ? single.toLocaleDateString('en-GB')
+                              : 'Date TBD'}
+                        </p>
+                        <p className="font-medium">
+                          Time: {batch.time || `${batch.start_time} - ${batch.end_time}`}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          Location: {batch.location || "Online"}
+                        </p>
+                      </div>
+                    );
+                  }
+                )}
+              </div>
+            </div>
           )}
 
-          {eachDayOfInterval({
-            start: startOfMonth(currentMonth),
-            end: endOfMonth(currentMonth),
-          }).map((date) => {
-            const dateKey = format(date, "yyyy-MM-dd");
-            const isSelectable =
-              isDateInRange(date) && hasAvailableBatches(date);
-            const isSelected = selectedDate && isSameDay(date, selectedDate);
-
-            return (
-              <button
-                key={date.toString()}
-                onClick={() => isSelectable && handleDateClick(date)}
-                className={`h-12 rounded-md text-sm flex items-center justify-center transition-colors
-                  ${
-                    isSelectable
-                      ? isSelected
-                        ? "bg-[#D40F14] text-white font-bold"
-                        : "bg-[#FFF5F5] text-[#D40F14] hover:bg-[#FFECEC]"
-                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                  }`}
-              >
-                {format(date, "d")}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Batches */}
-        {selectedDate && (
-          <div className="mt-6">
-            <h4 className="text-md font-semibold mb-2">
-              Batches for {format(selectedDate, "MMM d, yyyy")}:
-            </h4>
-            <div className="grid grid-cols-1 gap-4">
-              {batchesByDate[format(selectedDate, "yyyy-MM-dd")]?.map(
-                (batch) => {
-                  const isSelected = selectedBatch?.id === batch.id;
-                  return (
-                    <div
-                      key={batch.id}
-                      className={`p-4 border rounded-lg cursor-pointer transition-all
-                      ${
-                        isSelected
-                          ? "border-[#D40F14] bg-[#FFF5F5]"
-                          : "hover:border-gray-300"
-                      }`}
-                      onClick={() => handleBatchSelect(batch)}
-                    >
-                      <p className="font-medium">
-                        Time:{" "}
-                        {batch.time ||
-                          `${batch.start_time} - ${batch.end_time}`}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Location: {batch.location || "Online"}
-                      </p>
-                    </div>
-                  );
-                }
-              )}
-            </div>
+          {/* Action buttons */}
+          <div className="flex justify-end gap-3 mt-6">
+            <button
+              onClick={onClose}
+              className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleContinue}
+              disabled={!selectedBatch || isLoading}
+              className={`px-6 py-2 rounded-lg transition-colors ${
+                selectedBatch && !isLoading
+                  ? "bg-[#D40F14] hover:bg-[#B00D11] text-white"
+                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              {isLoading
+                ? "Processing..."
+                : workshop.price === 0
+                ? "Confirm"
+                : "Continue to Payment"}
+            </button>
           </div>
-        )}
-
-        {/* Action buttons */}
-        <div className="flex justify-end gap-3 mt-6">
-          <button
-            onClick={onClose}
-            className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleContinue}
-            disabled={!selectedBatch || isLoading}
-            className={`px-6 py-2 rounded-lg transition-colors ${
-              selectedBatch && !isLoading
-                ? "bg-[#D40F14] hover:bg-[#B00D11] text-white"
-                : "bg-gray-200 text-gray-500 cursor-not-allowed"
-            }`}
-          >
-            {isLoading
-              ? "Processing..."
-              : workshop.price === 0
-              ? "Confirm"
-              : "Continue to Payment"}
-          </button>
         </div>
       </div>
-    </div>
+      {showFreePopup && selectedBatch && (
+        <PaymentPopupSuccessStyle
+          orderId={`ORDER_${Date.now()}_${Math.floor(Math.random() * 1000)}`}
+          amount={0}
+          batch={{
+            date: selectedBatch.date || selectedBatch.start_date,
+            time: selectedBatch.time || selectedBatch.start_time,
+            location: selectedBatch.location,
+          }}
+          onClose={() => {
+            setShowFreePopup(false);
+            onClose();
+            router.push("/booking/success");
+          }}
+        />
+      )}
+      {showPaymentDetails && (
+        <PaymentDetails
+          studentData={{ id: student_id }}
+          workshopData={workshop}
+          selectedBatch={selectedBatch}
+          onCancel={() => setShowPaymentDetails(false)}
+          onProceed={() => {
+            setShowPaymentDetails(false);
+            onClose();
+          }}
+        />
+      )}
+    </>
   );
 }

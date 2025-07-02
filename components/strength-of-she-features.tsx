@@ -24,7 +24,7 @@ export default function StrengthOfSheFeatures() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold mb-2 text-center text-gray-800">Personalized Growth</h3>
+            <h3 className="text-xl font-bold mb-2 text-center text-gray-800">personalised Growth</h3>
             <p className="text-gray-600 text-center">
               Tailored exercises and reflections designed specifically for women's unique professional challenges.
             </p>

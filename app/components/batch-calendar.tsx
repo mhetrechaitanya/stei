@@ -213,7 +213,7 @@ export default function BatchCalendar({ workshop, onBatchSelected, onContinue }:
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold mb-4">Select a Batch</h2>
+      <h2 className="text-xl font-bold mb-4">Select a Batchkjhg</h2>
 
       {/* TBD Batches Section */}
       {tbdBatches.length > 0 && (

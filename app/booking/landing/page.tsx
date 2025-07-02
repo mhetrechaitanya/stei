@@ -65,9 +65,7 @@ export function WorkshopDetails({ workshop }: { workshop: Workshop }) {
           </div>
           <h3 className="text-2xl font-bold text-slate-800">About Workshop</h3>
         </div>
-        <p className="text-slate-600 text-lg leading-relaxed">
-          {workshop.description || "No description available."}
-        </p>
+        <div className="text-slate-600 text-lg leading-relaxed prose max-w-none" dangerouslySetInnerHTML={{ __html: workshop.description || "<p>No description available.</p>" }} />
       </div>
 
       {/* About Mentor */}
@@ -107,16 +105,9 @@ export function WorkshopDetails({ workshop }: { workshop: Workshop }) {
                 </p>
               ) : (
                 <>
-                  <p className="text-lg leading-relaxed">
-                    Our expert mentor brings years of industry experience to help you master new skills and advance your career. 
-                    With a proven track record of empowering individuals through personalized guidance and practical insights, 
-                    they are dedicated to your professional growth and success.
-                  </p>
-                  <p className="text-lg leading-relaxed">
-                    Through interactive sessions and hands-on learning, you'll gain valuable insights, develop essential skills, 
-                    and build the confidence needed to excel in your chosen field. Our mentor's expertise spans various domains, 
-                    ensuring you receive comprehensive guidance tailored to your specific needs and goals.
-                  </p>
+<p className="text-lg leading-relaxed mt-4">
+Sandhya Tewari is an academician, teacher, trainer, and NLP coach. Dr. Tewari has dedicated her career to empowering individuals, whether students, professionals, or corporate leaders. She has designed transformative workshops focused on self-awareness, communication, and professional growth. Her expertise in soft skills training, behavioural assessments, and coaching methodologies bridges the gap between academia and the corporate world.
+</p>
                 </>
               )}
             </div>

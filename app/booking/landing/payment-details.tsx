@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { CheckCircle, X, Loader2 } from "lucide-react"
+import { CheckCircle, X, Loader2, AlertTriangle } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 
@@ -23,6 +23,8 @@ export default function PaymentDetails({
   orderId = `ORDER_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
 }: PaymentDetailsProps) {
   const [isLoading, setIsLoading] = useState(false)
+  const [enrolled, setEnrolled] = useState(false)
+  const [alreadyEnrolled, setAlreadyEnrolled] = useState(false)
   const router = useRouter()
 
   console.log("students data : ", studentData, " workshop data : ", workshopData, " selected batch : ", selectedBatch);
@@ -130,13 +132,45 @@ export default function PaymentDetails({
   }
 
   // Format date for display
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string | undefined) => {
     if (!dateString) return "Not specified"
     try {
       const date = new Date(dateString)
       return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     } catch (e) {
       return dateString
+    }
+  }
+
+  // Free enrollment handler
+  const handleFreeEnroll = async () => {
+    setIsLoading(true)
+    setAlreadyEnrolled(false)
+    try {
+      const res = await fetch("/api/enrollment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentId: studentData.id,
+          workshopId: workshopData.id,
+          batchId: selectedBatch.id,
+          orderId,
+          amount: 0,
+          paymentStatus: "completed",
+        }),
+      })
+      const result = await res.json()
+      if (result.success) {
+        router.push(`/booking/success`)
+      } else if (result.alreadyEnrolled) {
+        setAlreadyEnrolled(true)
+      } else {
+        alert("Enrollment failed. Please try again.")
+      }
+    } catch (error) {
+      alert("Enrollment failed. Please try again.")
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -152,6 +186,24 @@ export default function PaymentDetails({
             className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-md transition-colors"
           >
             Go Back
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (alreadyEnrolled) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full flex flex-col items-center">
+          <AlertTriangle className="h-16 w-16 text-yellow-500 mb-4" />
+          <h2 className="text-2xl font-bold mb-2 text-yellow-700">Already Enrolled</h2>
+          <p className="text-gray-700 mb-4 text-center">You are already enrolled in this batch. Please check your email for details or contact support if you need help.</p>
+          <button
+            onClick={() => setAlreadyEnrolled(false)}
+            className="mt-2 px-4 py-2 bg-[#D40F14] text-white rounded-md hover:bg-red-700 transition-colors"
+          >
+            Close
           </button>
         </div>
       </div>
@@ -274,26 +326,41 @@ export default function PaymentDetails({
             </ul>
           </div>
 
-
-
-
           <div className="mt-6">
-            <button
-              onClick={handleCashfreeFlow}
-              disabled={isLoading}
-              className="w-full bg-[#D40F14] hover:bg-[#B00D11] text-white font-bold py-3 px-4 rounded-md transition-colors duration-300 disabled:opacity-70"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="animate-spin mr-2 h-5 w-5 inline" />
-                  Processing...
-                </>
-              ) : (
-                "Proceed to Payment"
-              )}
-            </button>
-
-            <div className="mt-3 text-center text-xs text-gray-500">Secure payment powered by Cashfree</div>
+            {Number(workshopData.price) === 0 ? (
+              <button
+                onClick={handleFreeEnroll}
+                disabled={isLoading}
+                className="w-full bg-[#D40F14] hover:bg-[#B00D11] text-white font-bold py-3 px-4 rounded-md transition-colors duration-300 disabled:opacity-70"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="animate-spin mr-2 h-5 w-5 inline" />
+                    Enrolling...
+                  </>
+                ) : (
+                  "Enroll for Free"
+                )}
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={onProceed}
+                  disabled={isLoading}
+                  className="w-full bg-[#D40F14] hover:bg-[#B00D11] text-white font-bold py-3 px-4 rounded-md transition-colors duration-300 disabled:opacity-70"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="animate-spin mr-2 h-5 w-5 inline" />
+                      Processing...
+                    </>
+                  ) : (
+                    "Proceed to Payment"
+                  )}
+                </button>
+                <div className="mt-3 text-center text-xs text-gray-500">Secure payment powered by Cashfree</div>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -194,7 +194,7 @@ export default function BatchCalendar({ workshop, onBatchSelected, onContinue }:
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-bold mb-4">Select a Batch</h2>
+      <h2 className="text-xl font-bold mb-4">Select a Batnbnbnbch</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Calendar Column */}

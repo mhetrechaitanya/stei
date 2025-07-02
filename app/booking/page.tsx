@@ -246,7 +246,7 @@ export default async function BookingPage({
                       type="tel"
                       id="phone"
                       name="phone"
-                      placeholder="+91 98765 43210"
+                      placeholder=""
                       className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14] focus:border-transparent"
                       required
                     />

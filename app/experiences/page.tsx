@@ -60,7 +60,7 @@ const participantExperiences = [
     company: "Company C",
     image: "/placeholder.svg?height=160&width=160",
     experience:
-      "I enrolled in the Emotional Intelligence workshop to improve my ability to handle difficult workplace conversations. The program exceeded my expectations in every way. The expertise in NLP techniques provided me with practical tools to manage emotions and communicate more effectively. The small group format allowed for personalized attention and real-time feedback.",
+      "I enrolled in the Emotional Intelligence workshop to improve my ability to handle difficult workplace conversations. The program exceeded my expectations in every way. The expertise in NLP techniques provided me with practical tools to manage emotions and communicate more effectively. The small group format allowed for personalised attention and real-time feedback.",
     workshop: "Emotional Intelligence",
     rating: 5,
     date: "February 2023",

@@ -179,7 +179,7 @@ export default function IACEInterviewsPage() {
                 <CheckCircle className="h-6 w-6 text-[#D40F14] mr-3 flex-shrink-0 mt-0.5" />
                 <div>
                   <h3 className="font-bold text-lg mb-1">Mock Interview Practice</h3>
-                  <p className="text-gray-600">Participate in realistic mock interviews with personalized feedback</p>
+                  <p className="text-gray-600">Participate in realistic mock interviews with personalised feedback</p>
                 </div>
               </div>
               <div className="flex items-start">

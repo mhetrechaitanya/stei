@@ -54,7 +54,7 @@ export default function MissionSection() {
           >
             <h3 className="text-xl font-bold mb-4 text-[#D40F14]">Our Mission</h3>
             <p className="text-gray-600">
-              <SteiText /> is committed to empowering individuals through accessible education and personalized
+              <SteiText /> is committed to empowering individuals through accessible education and personalised
               development programs that foster growth, confidence, and success in all aspects of life.
             </p>
           </div>
@@ -79,7 +79,7 @@ export default function MissionSection() {
             <h3 className="text-xl font-bold mb-4 text-[#D40F14]">Our Values</h3>
             <ul className="text-gray-600 space-y-2">
               <li>• Accessibility for all</li>
-              <li>• Personalized approach</li>
+              <li>• personalised approach</li>
               <li>• Continuous innovation</li>
               <li>• Integrity and authenticity</li>
               <li>• Community and support</li>

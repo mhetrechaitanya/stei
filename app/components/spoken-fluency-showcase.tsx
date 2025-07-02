@@ -61,7 +61,7 @@ export default function SpokenFluencyShowcase() {
                 </li>
                 <li className="flex items-start">
                   <Users className="h-5 w-5 text-[#D40F14] mr-2 flex-shrink-0 mt-0.5" />
-                  <span>Small batch size (max 15 participants) for personalized attention</span>
+                  <span>Small batch size (max 15 participants) for personalised attention</span>
                 </li>
                 <li className="flex items-start">
                   <CheckCircle className="h-5 w-5 text-[#D40F14] mr-2 flex-shrink-0 mt-0.5" />

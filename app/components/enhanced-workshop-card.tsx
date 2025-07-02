@@ -31,9 +31,17 @@ export default function EnhancedWorkshopCard({
           <h3 className="text-xl font-bold mb-2 text-gray-800">
             {workshop.title}
           </h3>
-          <p className="text-gray-600 mb-4 line-clamp-2">
-            {workshop.description}
-          </p>
+          {/* Render HTML description safely */}
+          {workshop.description ? (
+            <div
+              className="text-gray-600 mb-4 line-clamp-2 prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: workshop.description }}
+            />
+          ) : (
+            <p className="text-gray-600 mb-4 line-clamp-2">
+              No description available.
+            </p>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-3 mb-4">

@@ -11,7 +11,7 @@ const showcaseItems = [
     image: "/placeholder.svg?height=800&width=1200",
     title: "Empowering Individuals",
     description:
-      "Building confidence through personalized coaching and mentorship programs designed to help you reach your full potential.",
+      "Building confidence through personalised coaching and mentorship programs designed to help you reach your full potential.",
     ctaText: "Learn More",
     ctaLink: "/about",
     featured: true,
@@ -43,7 +43,7 @@ const showcaseItems = [
   {
     id: 5,
     image: "/placeholder.svg?height=600&width=800",
-    title: "Personalized Coaching",
+    title: "personalised Coaching",
     description: "One-on-one sessions tailored to your needs",
     ctaText: "Book a Session",
     ctaLink: "/products-services#coaching",

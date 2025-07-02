@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
   title: "STEI - Empowering Individuals",
-  description: "Building confidence through personalized coaching in an engaging, inclusive environment",
+  description: "Building confidence through personalised coaching in an engaging, inclusive environment",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "32x32" },

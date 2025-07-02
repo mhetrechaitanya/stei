@@ -10,7 +10,7 @@ const gridItems = [
     id: 1,
     image: "/placeholder.svg?height=600&width=800",
     title: "Empowering Individuals",
-    description: "Building confidence through personalized coaching",
+    description: "Building confidence through personalised coaching",
     ctaText: "Learn More",
     ctaLink: "/about",
   },

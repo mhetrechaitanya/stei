@@ -115,6 +115,22 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { studentId, workshopId, batchId, orderId, amount } = body
 
+    // Check if already enrolled
+    const { data: existingEnrollment, error: checkError } = await supabase
+      .from("enrollments")
+      .select("id")
+      .eq("student_id", studentId)
+      .eq("batch_id", batchId)
+      .maybeSingle();
+
+    if (existingEnrollment) {
+      return NextResponse.json({
+        success: false,
+        message: "You are already enrolled in this batch.",
+        alreadyEnrolled: true,
+      }, { status: 400 });
+    }
+
     const { data: enrollmentData, error: insertError } = await supabase
       .from("enrollments")
       .insert([{

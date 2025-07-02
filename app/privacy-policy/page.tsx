@@ -139,7 +139,7 @@ export default function PrivacyPolicyPage() {
                 https://stei.pro/
               </a>
               <br />
-              <strong>Phone:</strong> +91 98765 43210
+              {/* <strong>Phone:</strong> +91 98765 43210 */}
             </p>
 
             <p className="mt-8 font-medium">By using stei, you consent to the terms of this Privacy Policy.</p>
