@@ -10,13 +10,13 @@ async function sendWelcomeEmail(to: string, firstName: string) {
       port: 465,
       secure: true,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: process.env.SMTP_USER_SUPPORT,
+        pass: process.env.SMTP_PASS_SUPPORT,
       },
     });
 
     const mailOptions = {
-      from: `"stei" <${process.env.SMTP_USER}>`,
+      from: `"stei" <${process.env.SMTP_USER_SUPPORT}>`,
       to,
       subject: "Welcome to stei – Your Growth Journey Begins Here",
       html: `
@@ -38,10 +38,10 @@ async function sendWelcomeEmail(to: string, firstName: string) {
               <td>
                 <h2 style="color: #D40F14;">Hi ${firstName},</h2>
                 <p style="font-size: 16px; line-height: 1.6;">
-                  Welcome to <strong>stei</strong> – we're so glad you’re here!
+                  Welcome to <strong>stei</strong> – we're so glad you're here!
                 </p>
                 <p style="font-size: 16px; line-height: 1.6;">
-                  You’ve just taken a meaningful step toward discovering your strengths, building confidence, and unlocking new possibilities. At stei, we’re committed to helping individuals like you grow through personalised coaching, transformative workshops, and a lot of real, reflective conversation.
+                  You've just taken a meaningful step toward discovering your strengths, building confidence, and unlocking new possibilities. At stei, we're committed to helping individuals like you grow through personalised coaching, transformative workshops, and a lot of real, reflective conversation.
                 </p>
 
                 <h3 style="margin-top: 30px; color: #333;">What you get:</h3>
@@ -57,7 +57,7 @@ async function sendWelcomeEmail(to: string, firstName: string) {
                 </p>
 
                 <p style="font-size: 16px; line-height: 1.6;">
-                  We’d love to get to know you better and guide you to programs that fit your goals. Until then, explore our offerings and feel free to connect with us anytime.
+                  We'd love to get to know you better and guide you to programs that fit your goals. Until then, explore our offerings and feel free to connect with us anytime.
                 </p>
 
                 <div style="margin: 30px 0;">
@@ -66,7 +66,7 @@ async function sendWelcomeEmail(to: string, firstName: string) {
                   </a>
                 </div>
 
-                <p style="font-size: 14px; color: #555;">Let’s make this journey transformative and enjoyable.</p>
+                <p style="font-size: 14px; color: #555;">Let's make this journey transformative and enjoyable.</p>
 
                 <p style="margin-top: 20px;">
                   Warmly,<br />

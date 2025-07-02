@@ -28,13 +28,13 @@ async function sendWelcomeEmail({
       port: 465,
       secure: true,
       auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: process.env.SMTP_USER_WORKSHOP,
+        pass: process.env.SMTP_PASS_WORKSHOP,
       },
     })
 
     const mailOptions = {
-      from: `"stei" <${process.env.SMTP_USER}>`,
+      from: `"stei" <${process.env.SMTP_USER_WORKSHOP}>`,
       to,
       subject: "Workshop Confirmation – stei",
       html: `

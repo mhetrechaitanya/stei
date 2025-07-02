@@ -209,6 +209,8 @@ export default function BookingLandingClient({ workshopId, batchId }: BookingLan
           workshop={workshopData}
           onBatchSelected={handleBatchSelected}
           onContinue={handleBatchSelectionComplete}
+          student_id={studentData && typeof studentData === 'object' && studentData !== null && 'id' in studentData ? studentData.id : undefined}
+          studentEmail={studentData && typeof studentData === 'object' && studentData !== null && 'email' in studentData ? studentData.email : undefined}
         />
       )}
 

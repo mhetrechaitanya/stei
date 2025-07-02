@@ -61,6 +61,7 @@ interface CalendarBatchSelectorProps {
   onBatchSelected: (batch: Batch) => void;
   onContinue: (batch: Batch) => void;
   student_id?: string;
+  studentEmail?: string;
 }
 
 export default function CalendarBatchSelector({
@@ -70,6 +71,7 @@ export default function CalendarBatchSelector({
   onBatchSelected,
   onContinue,
   student_id,
+  studentEmail,
 }: CalendarBatchSelectorProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null);
@@ -359,11 +361,31 @@ export default function CalendarBatchSelector({
           orderId={`ORDER_${Date.now()}_${Math.floor(Math.random() * 1000)}`}
           amount={0}
           batch={{
-            date: selectedBatch.date || selectedBatch.start_date,
-            time: selectedBatch.time || selectedBatch.start_time,
+            date: selectedBatch.date,
+            time: selectedBatch.time,
             location: selectedBatch.location,
+            start_date: selectedBatch.start_date,
+            end_date: selectedBatch.end_date,
+            start_time: selectedBatch.start_time,
+            end_time: selectedBatch.end_time,
           }}
-          onClose={() => {
+          studentId={student_id || ""}
+          workshopId={workshop.id}
+          batchId={selectedBatch.id}
+          onClose={async () => {
+            // Send workshop confirmation email for free enrollment via API route
+            try {
+              await fetch("/api/send-free-workshop-email", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  to: studentEmail || student_id, // Use actual email field if available
+                  batch: selectedBatch,
+                }),
+              });
+            } catch (err) {
+              console.error("❌ Free workshop email failed:", err);
+            }
             setShowFreePopup(false);
             onClose();
             router.push("/booking/success");
@@ -371,16 +393,26 @@ export default function CalendarBatchSelector({
         />
       )}
       {showPaymentDetails && (
-        <PaymentDetails
-          studentData={{ id: student_id }}
-          workshopData={workshop}
-          selectedBatch={selectedBatch}
-          onCancel={() => setShowPaymentDetails(false)}
-          onProceed={() => {
-            setShowPaymentDetails(false);
-            onClose();
-          }}
-        />
+        (() => {
+          if (!student_id || !selectedBatch || !selectedBatch.id) {
+            alert("Missing student or batch information. Please try again.");
+            console.error("Missing student_id or selectedBatch.id", { student_id, selectedBatch });
+            return null;
+          }
+          console.log("Rendering PaymentDetails with:", { student_id, batchId: selectedBatch.id });
+          return (
+            <PaymentDetails
+              studentData={{ id: student_id }}
+              workshopData={workshop}
+              selectedBatch={selectedBatch}
+              onCancel={() => setShowPaymentDetails(false)}
+              onProceed={() => {
+                setShowPaymentDetails(false);
+                onClose();
+              }}
+            />
+          );
+        })()
       )}
     </>
   );

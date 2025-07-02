@@ -69,9 +69,14 @@ export default function ClientWrapper({ workshop }: ClientWrapperProps) {
   const handleBatchSelectionComplete = (batch: any) => {
     console.log("Batch selection completed with:", batch);
     setSelectedBatch(batch);
+    // Only open PaymentDetails if both IDs are present
+    if (!studentData || !studentData.id || !batch || !batch.id) {
+      alert("Missing student or batch information. Please try again.");
+      console.error("Missing studentData.id or batch.id", { studentData, batch });
+      return;
+    }
+    console.log("Opening PaymentDetails with:", { studentId: studentData.id, batchId: batch.id });
     setIsBatchSelectorOpen(false);
-
-    // Show payment details
     setTimeout(() => {
       setIsPaymentDetailsOpen(true);
     }, 300);
