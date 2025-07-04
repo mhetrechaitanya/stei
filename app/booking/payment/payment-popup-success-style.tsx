@@ -129,12 +129,12 @@ export default function PaymentPopupSuccessStyle({
                   </span>
                 </div>
               )}
-              {batch.location && (
+              {/* {batch.location && (
                 <div className="flex justify-between">
                   <span className="text-gray-600 flex items-center"><MapPin className="h-4 w-4 mr-1 text-[#D40F14]" />Location:</span>
                   <span className="font-medium">{batch.location}</span>
                 </div>
-              )}
+              )} */}
               <div className="flex justify-between border-t pt-2 mt-2">
                 <span className="font-bold">Total Amount:</span>
                 <span className="font-bold text-[#D40F14]">₹{amount.toFixed(2)}</span>

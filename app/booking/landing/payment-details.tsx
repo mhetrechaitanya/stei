@@ -161,7 +161,7 @@ export default function PaymentDetails({
       })
       const result = await res.json()
       if (result.success) {
-        router.push(`/booking/success`)
+        // router.push(`/booking/success`)
       } else if (result.alreadyEnrolled) {
         setAlreadyEnrolled(true)
       } else {

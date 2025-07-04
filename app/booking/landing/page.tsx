@@ -7,6 +7,8 @@ import ErrorBoundaryWrapper from "@/app/components/error-boundary-wrapper";
 
 // Import the new client component
 import ClientWrapper from "./client-wrapper";
+import WorkshopDetailsClient from "./workshop-details-client";
+import { useState } from "react";
 
 interface Mentor {
   id?: string;
@@ -35,181 +37,6 @@ interface Workshop {
   batches?: WorkshopBatch[];
   mentor?: Mentor;
   testimonials?: any[];
-}
-
-export function WorkshopDetails({ workshop }: { workshop: Workshop }) {
-  if (!workshop) {
-    return (
-      <div className="p-6 bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-400 rounded-xl shadow-sm">
-        <div className="flex items-center">
-          <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mr-4">
-            <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-          </div>
-          <p className="text-amber-800 font-medium">Workshop details are not available.</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="mb-10 space-y-8">
-      {/* About Workshop */}
-      <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl p-8 border border-slate-200">
-        <div className="flex items-center mb-6">
-          <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mr-4">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-            </svg>
-          </div>
-          <h3 className="text-2xl font-bold text-slate-800">About Workshop</h3>
-        </div>
-        <div className="text-slate-600 text-lg leading-relaxed prose max-w-none" dangerouslySetInnerHTML={{ __html: workshop.description || "<p>No description available.</p>" }} />
-      </div>
-
-      {/* About Mentor */}
-      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 border border-purple-200 shadow-sm">
-        <div className="flex items-center mb-8">
-          <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mr-4">
-            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </div>
-          <h3 className="text-2xl font-bold text-slate-800">About Mentor</h3>
-        </div>
-        
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Left side - Image */}
-          <div className="md:w-1/3">
-            <div className="relative h-[400px] w-full rounded-2xl overflow-hidden shadow-xl">
-              <Image
-                src={workshop.mentor?.image || "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/1573993472182%20%281%29.jpg-OVm1fWafCW2a4vffSUJCXikiuvnhme.jpeg"}
-                alt={workshop.mentor?.name || "Workshop Mentor"}
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div>
-
-          {/* Right side - Information */}
-          <div className="md:w-2/3">
-            <h4 className="text-3xl font-bold text-slate-800 mb-6">
-              About {workshop.mentor?.name || "Our Expert Mentor"}
-            </h4>
-
-            <div className="space-y-4 text-slate-700">
-              {workshop.mentor?.bio ? (
-                <p className="text-lg leading-relaxed">
-                  {workshop.mentor.bio}
-                </p>
-              ) : (
-                <>
-<p className="text-lg leading-relaxed mt-4">
-Sandhya Tewari is an academician, teacher, trainer, and NLP coach. Dr. Tewari has dedicated her career to empowering individuals, whether students, professionals, or corporate leaders. She has designed transformative workshops focused on self-awareness, communication, and professional growth. Her expertise in soft skills training, behavioural assessments, and coaching methodologies bridges the gap between academia and the corporate world.
-</p>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Batch Information */}
-      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-200 shadow-sm">
-        <div className="flex items-center mb-6">
-          <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mr-4">
-            <Calendar className="w-6 h-6 text-white" />
-          </div>
-          <h3 className="text-2xl font-bold text-slate-800">Available Batches</h3>
-        </div>
-        {workshop.batches && workshop.batches.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {workshop.batches.map((batch, index) => {
-              console.log(batch); // Log each batch object
-              const slotsLeft = typeof batch.slots === "number" && typeof batch.enrolled === "number"
-                ? batch.slots - batch.enrolled
-                : "Limited";
-              
-              return (
-                <div
-                  key={index}
-                  className="bg-white rounded-xl p-6 border border-green-200 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <h4 className="font-bold text-slate-800 text-lg">{batch.batch_name}</h4>
-                    <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                      Batch {index + 1}
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="flex items-center text-slate-600">
-                      <Calendar className="w-4 h-4 mr-2 text-green-500" />
-                      <span>{batch.start_date || "Date TBD"}</span>
-                    </div>
-                    <div className="flex items-center text-slate-600">
-                      <Clock className="w-4 h-4 mr-2 text-green-500" />
-                      <span>{batch.start_time || "Time TBD"}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <Users className="w-4 h-4 mr-2 text-red-500" />
-                      <span className="text-red-600 font-bold text-lg">
-                        {slotsLeft}
-                      </span>
-                      <span className="text-slate-600 ml-1">slots left</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className="bg-white rounded-xl p-8 border border-dashed border-green-300 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Calendar className="w-8 h-8 text-green-500" />
-            </div>
-            <p className="text-slate-500 text-lg">No batches available at the moment.</p>
-            <p className="text-slate-400 text-sm mt-2">Check back soon for new batch announcements!</p>
-          </div>
-        )}
-      </div>
-
-      {/* Testimonials */}
-      {workshop.testimonials && workshop.testimonials.length > 0 && (
-        <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-8 border border-orange-200 shadow-sm">
-          <div className="flex items-center mb-6">
-            <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-4">
-              <Star className="w-6 h-6 text-white fill-current" />
-            </div>
-            <h3 className="text-2xl font-bold text-slate-800">Feedback from Previous Participants</h3>
-          </div>
-          <div className="bg-white rounded-xl p-6 border-l-4 border-orange-400 shadow-sm">
-            <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <p className="text-slate-700 italic text-lg leading-relaxed mb-3">
-                  "{workshop.testimonials[0].text}"
-                </p>
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-red-400 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-bold">
-                      {workshop.testimonials[0].name?.charAt(0) || "A"}
-                    </span>
-                  </div>
-                  <span className="font-bold text-slate-800">{workshop.testimonials[0].name}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
 }
 
 export default async function BookingLandingPage({
@@ -376,15 +203,13 @@ export default async function BookingLandingPage({
           <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-10 border border-white/20">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-4">
-                Workshop Registration
+                Workshop Details
               </h2>
               <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
             </div>
 
-            {/* Workshop Info - Wrapped in ErrorBoundary */}
-            <ErrorBoundaryWrapper>
-              <WorkshopDetails workshop={sanitizedWorkshop} />
-            </ErrorBoundaryWrapper>
+            {/* Workshop Info - Client-side for modal logic */}
+            <WorkshopDetailsClient workshop={sanitizedWorkshop} />
 
             <div className="grid md:grid-cols-2 gap-8 mt-12">
               {/* New Registration */}

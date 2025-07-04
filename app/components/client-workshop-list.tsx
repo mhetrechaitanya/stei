@@ -176,7 +176,7 @@ export default function ClientWorkshopList({ initialWorkshops = [], categories =
       )}
 
       {/* Workshops Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:participantsparticipantsgrid-cols-3 gap-6">
         {filteredWorkshops.map((workshop) => (
           <EnhancedWorkshopCard key={workshop.id} workshop={workshop} />
         ))}

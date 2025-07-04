@@ -80,6 +80,7 @@ export default function CalendarBatchSelector({
     {}
   );
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDateRange, setSelectedDateRange] = useState<{ start: Date | null; end: Date | null }>({ start: null, end: null });
   const [isLoading, setIsLoading] = useState(false);
   const [dateRange, setDateRange] = useState<{
     start: Date | null;
@@ -192,8 +193,16 @@ export default function CalendarBatchSelector({
     if (batches.length === 1) {
       setSelectedBatch(batches[0]);
       onBatchSelected(batches[0]);
+      if (batches[0].start_date && batches[0].end_date) {
+        const start = parseISO(batches[0].start_date);
+        const end = parseISO(batches[0].end_date);
+        setSelectedDateRange({ start, end });
+      } else {
+        setSelectedDateRange({ start: date, end: date });
+      }
     } else {
       setSelectedBatch(null);
+      setSelectedDateRange({ start: date, end: date });
     }
   };
 
@@ -207,7 +216,7 @@ export default function CalendarBatchSelector({
   return (
     <>
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fadeIn">
-        <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-auto p-6">
+        <div className="bg-white rounded-xl shadow-xl max-w-xl w-full max-h-[90vh] overflow-auto p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">Select a Batch</h2>
             <button
@@ -264,7 +273,12 @@ export default function CalendarBatchSelector({
               const dateKey = format(date, "yyyy-MM-dd");
               const isSelectable =
                 isDateInRange(date) && hasAvailableBatches(date);
-              const isSelected = selectedDate && isSameDay(date, selectedDate);
+              let isSelected = false;
+              if (selectedDateRange.start && selectedDateRange.end) {
+                isSelected = isWithinInterval(date, { start: selectedDateRange.start, end: selectedDateRange.end });
+              } else if (selectedDate) {
+                isSelected = isSameDay(date, selectedDate);
+              }
 
               return (
                 <button
@@ -298,6 +312,18 @@ export default function CalendarBatchSelector({
                     const start = batch.start_date ? parseFlexibleDate(batch.start_date) : null;
                     const end = batch.end_date ? parseFlexibleDate(batch.end_date) : null;
                     const single = batch.date ? parseFlexibleDate(batch.date) : null;
+                    const dateRange = start && end
+                      ? `${start.toLocaleDateString('en-GB')} - ${end.toLocaleDateString('en-GB')}`
+                      : start
+                        ? start.toLocaleDateString('en-GB')
+                        : single
+                          ? single.toLocaleDateString('en-GB')
+                          : 'Date TBD';
+                    const timeRange = batch.start_time && batch.end_time
+                      ? `${batch.start_time} - ${batch.end_time}`
+                      : batch.start_time
+                        ? batch.start_time
+                        : batch.time || 'Time TBD';
                     return (
                       <div
                         key={batch.id}
@@ -310,14 +336,10 @@ export default function CalendarBatchSelector({
                         onClick={() => handleBatchSelect(batch)}
                       >
                         <p className="font-medium">
-                          Date: {start && end
-                            ? `${start.toLocaleDateString('en-GB')} - ${end.toLocaleDateString('en-GB')}`
-                            : single
-                              ? single.toLocaleDateString('en-GB')
-                              : 'Date TBD'}
+                          Date: {dateRange}
                         </p>
                         <p className="font-medium">
-                          Time: {batch.time || `${batch.start_time} - ${batch.end_time}`}
+                          Time: {timeRange}
                         </p>
                         <p className="text-sm text-gray-600">
                           Location: {batch.location || "Online"}
@@ -380,7 +402,15 @@ export default function CalendarBatchSelector({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                   to: studentEmail || student_id, // Use actual email field if available
-                  batch: selectedBatch,
+                  batch: {
+                    ...selectedBatch,
+                    dateRange: selectedBatch.start_date && selectedBatch.end_date
+                      ? `${selectedBatch.start_date} - ${selectedBatch.end_date}`
+                      : selectedBatch.start_date || '',
+                    timeRange: selectedBatch.start_time && selectedBatch.end_time
+                      ? `${selectedBatch.start_time} - ${selectedBatch.end_time}`
+                      : selectedBatch.start_time || '',
+                  },
                 }),
               });
             } catch (err) {
@@ -388,7 +418,7 @@ export default function CalendarBatchSelector({
             }
             setShowFreePopup(false);
             onClose();
-            router.push("/booking/success");
+            // router.push("/booking/success");
           }}
         />
       )}
