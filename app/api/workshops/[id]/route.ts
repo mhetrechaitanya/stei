@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import { revalidatePath } from "next/cache"
 
-export async function GET(request: Request, { params }) {
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   const { id } = params
 
   try {
@@ -22,12 +22,12 @@ export async function GET(request: Request, { params }) {
 
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Fetch the workshop by ID
+    // Fetch the workshop by ID with the correct field names
     const { data, error } = await supabase
       .from("workshops")
       .select(`
         *,
-        batches (*),
+        batches:workshop_batches (*),
         mentor:mentor_id (*),
         testimonials (*)
       `)
@@ -54,20 +54,30 @@ export async function GET(request: Request, { params }) {
       )
     }
 
-    return NextResponse.json(data)
-  } catch (error) {
+    // Transform the data to include both old and new field names for compatibility
+    const transformedData = {
+      ...data,
+      // Add compatibility fields for frontend components that expect old names
+      title: data.name,
+      price: data.fee,
+      sessions: data.sessions_r,
+      duration: data.duration_v && data.duration_u ? `${data.duration_v} ${data.duration_u}` : "2 hours per session",
+    }
+
+    return NextResponse.json(transformedData)
+  } catch (error: unknown) {
     console.error(`Error fetching workshop ${id}:`, error)
     return NextResponse.json(
       {
         error: "Server error",
-        details: error.message || "An unexpected error occurred",
+        details: error instanceof Error ? error.message : "An unexpected error occurred",
       },
       { status: 500 },
     )
   }
 }
 
-export async function PUT(request: Request, { params }) {
+export async function PUT(request: Request, { params }: { params: { id: string } }) {
   const { id } = params
 
   try {
@@ -90,15 +100,16 @@ export async function PUT(request: Request, { params }) {
 
     const supabase = createClient(supabaseUrl, supabaseKey)
 
-    // Prepare the update data
+    // Prepare the update data using correct field names
     const updateData = {
-      title: workshopData.title,
+      name: workshopData.title || workshopData.name,
       description: workshopData.description,
-      price: Number(workshopData.price) || 4999,
-      sessions: Number(workshopData.sessions) || 4,
-      duration: workshopData.duration || "2 hours per session",
+      fee: Number(workshopData.price || workshopData.fee) || 4999,
+      sessions_r: Number(workshopData.sessions || workshopData.sessions_r) || 4,
+      duration_v: workshopData.duration_v || "2",
+      duration_u: workshopData.duration_u || "hours",
       capacity: Number(workshopData.capacity) || 15,
-      category: workshopData.category || null,
+      category_id: workshopData.category || workshopData.category_id || null,
       image: workshopData.image || null,
       updated_at: new Date().toISOString(),
     }
@@ -125,19 +136,19 @@ export async function PUT(request: Request, { params }) {
       data: data[0],
       message: "Workshop updated successfully",
     })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(`Error updating workshop ${id}:`, error)
     return NextResponse.json(
       {
         error: "Server error",
-        details: error.message || "An unexpected error occurred",
+        details: error instanceof Error ? error.message : "An unexpected error occurred",
       },
       { status: 500 },
     )
   }
 }
 
-export async function DELETE(request: Request, { params }) {
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   const { id } = params
 
   try {
@@ -183,12 +194,12 @@ export async function DELETE(request: Request, { params }) {
       success: true,
       message: "Workshop deleted successfully",
     })
-  } catch (error) {
+  } catch (error: unknown) {
     console.error(`Error deleting workshop ${id}:`, error)
     return NextResponse.json(
       {
         error: "Server error",
-        details: error.message || "An unexpected error occurred",
+        details: error instanceof Error ? error.message : "An unexpected error occurred",
       },
       { status: 500 },
     )

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Calendar, Clock, Users, Star } from "lucide-react";
+import { Calendar, Clock, Users, Star, X } from "lucide-react";
+import VerificationModal from "./verification-modal";
+// REMOVE: import EnrollModal from "./enroll-modal";
 
 interface Mentor {
   id?: string;
@@ -37,9 +39,10 @@ interface Workshop {
 }
 
 export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop }) {
-  const [showEnrollModal, setShowEnrollModal] = useState(false);
-  const handleEnrollNow = () => setShowEnrollModal(true);
-  const handleCloseModal = () => setShowEnrollModal(false);
+  // REMOVE: const [showEnrollModal, setShowEnrollModal] = useState(false);
+  // REMOVE: const handleEnrollNow = ...
+  // REMOVE: const handleCloseModal = ...
+  // REMOVE: useEffect for scroll lock
 
   // Helper to format date as DD/MM/YYYY
   function formatDate(dateStr?: string) {
@@ -58,6 +61,12 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
     return timeStr;
   }
 
+  // Handle enrollment - this will be handled by ClientWrapper's event listeners
+  const handleEnrollNow = () => {
+    // Do nothing - let the ClientWrapper handle the click via event listeners
+    console.log("Enroll now button clicked in WorkshopDetailsClient");
+  };
+
   if (!workshop) {
     return (
       <div className="p-6 bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-400 rounded-xl shadow-sm">
@@ -75,6 +84,31 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
 
   return (
     <div className="mb-10 space-y-8">
+      {/* Background Image Header */}
+      <div className="relative w-full h-64 md:h-80 flex items-center justify-center mb-8">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={workshop.image || "/placeholder.svg?height=400&width=800"}
+            
+            alt={workshop.title || "Workshop Image"}
+            fill
+            className="object-cover object-center w-full h-full rounded-b-3xl opacity-80"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/10 rounded-b-3xl" />
+        </div>
+        <div className="relative z-10 flex flex-col items-center justify-center w-full h-full text-center px-4">
+          <Link href="/workshops" className="mb-4 inline-block px-4 py-2 rounded-full bg-black/40 text-white text-sm font-medium hover:bg-black/60 transition-colors">
+            ← Back to Workshops
+          </Link>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg mb-4">
+            Register for <span className="text-blue-300">{workshop.title || "Workshop"}</span>
+          </h1>
+          <p className="text-lg md:text-xl text-white/90 font-medium max-w-2xl mx-auto">
+            Join our expert-led workshop and enhance your skills with hands-on learning
+          </p>
+        </div>
+      </div>
       {/* About Workshop */}
       <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl p-8 border border-slate-200">
         <div className="flex items-center mb-6">
@@ -87,6 +121,152 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
         </div>
         <div className="text-slate-600 text-lg leading-relaxed prose max-w-none" dangerouslySetInnerHTML={{ __html: workshop.description || "<p>No description available.</p>" }} />
       </div>
+
+      {/* Workshop Schedule & Details Section */}
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-8 border border-indigo-200 shadow-sm">
+        <div className="flex items-center mb-6">
+          <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mr-4">
+            <Calendar className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="text-2xl font-bold text-slate-800">Workshop Schedule & Details</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Duration */}
+          <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                <Clock className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">Total Duration</p>
+                <p className="text-gray-600">
+                  {(workshop as any).duration_v && (workshop as any).duration_u 
+                    ? `${(workshop as any).duration_v} ${(workshop as any).duration_u}` 
+                    : "2 hours per session"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Sessions */}
+          <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                <Calendar className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">Total Sessions</p>
+                <p className="text-gray-600">
+                  {(workshop as any).sessions_r || 4} sessions
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Minutes per Session */}
+          <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                <Clock className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">Session Duration</p>
+                <p className="text-gray-600">
+                  {(workshop as any).minutes_p 
+                    ? `${(workshop as any).minutes_p} minutes` 
+                    : "120 minutes"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Start Date */}
+          <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                <Calendar className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">Start Date</p>
+                <p className="text-gray-600">
+                  {(workshop as any).start_date 
+                    ? new Date((workshop as any).start_date).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric'
+                      })
+                    : "To be announced"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Session Start Time */}
+          <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                <Clock className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">Session Time</p>
+                <p className="text-gray-600">
+                  {(workshop as any).session_start_time || "10:00 AM"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Sessions per Day */}
+          <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
+            <div className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                <Users className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">Sessions per Day</p>
+                <p className="text-gray-600">
+                  {(workshop as any).sessions_per_day || "1 session"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Workshop Info */}
+        <div className="mt-8 pt-6 border-t border-indigo-200">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                  <Users className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Batch Capacity</p>
+                  <p className="text-gray-600">
+                    Maximum {(workshop as any).capacity || 15} participants per batch
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                  <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Workshop Format</p>
+                  <p className="text-gray-600">
+                    Interactive live sessions with hands-on practice
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
  {/* Enroll Now Call-to-Action Section */}
  <div className="my-10 flex justify-center">
         <div className="w-full max-w-4x2 bg-gradient-to-r from-[#D40F14] via-[#B00D11] to-[#D40F14] rounded-2xl shadow-xl px-6 py-4 flex flex-col md:flex-row items-center md:items-center text-white border-4 border-[#fff] relative overflow-hidden">
@@ -97,7 +277,7 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
             <h2 className="text-2xl md:text-2xl font-extrabold drop-shadow-lg whitespace-nowrap">Ready to Enroll?</h2>
             <p className="text-base md:text-lg font-medium opacity-90 mb-0 text-center md:text-left flex-1">Secure your spot in this workshop and start your learning journey today!</p>
             <button
-              className="bg-white text-[#D40F14] hover:bg-gray-100 font-bold px-6 py-3 rounded-xl text-lg shadow-lg transition-all duration-200 border-2 border-[#D40F14] hover:scale-105 whitespace-nowrap"
+              className="enroll-now-btn bg-white text-[#D40F14] hover:bg-gray-100 font-bold px-6 py-3 rounded-xl text-lg shadow-lg transition-all duration-200 border-2 border-[#D40F14] hover:scale-105 whitespace-nowrap"
               onClick={handleEnrollNow}
             >
               Enroll Now
@@ -149,7 +329,6 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
         </div>
       </div>
 
-      {/* Enroll Now Call-to-Action Section */}
       <div className="my-10 flex justify-center">
         <div className="w-full max-w-4x2 bg-gradient-to-r from-[#D40F14] via-[#B00D11] to-[#D40F14] rounded-2xl shadow-xl px-6 py-4 flex flex-col md:flex-row items-center md:items-center text-white border-4 border-[#fff] relative overflow-hidden">
           <div className="absolute -top-8 -left-8 opacity-20 text-[120px] pointer-events-none select-none">
@@ -159,7 +338,7 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
             <h2 className="text-2xl md:text-2xl font-extrabold drop-shadow-lg whitespace-nowrap">Ready to Enroll?</h2>
             <p className="text-base md:text-lg font-medium opacity-90 mb-0 text-center md:text-left flex-1">Secure your spot in this workshop and start your learning journey today!</p>
             <button
-              className="bg-white text-[#D40F14] hover:bg-gray-100 font-bold px-6 py-3 rounded-xl text-lg shadow-lg transition-all duration-200 border-2 border-[#D40F14] hover:scale-105 whitespace-nowrap"
+              className="enroll-now-btn bg-white text-[#D40F14] hover:bg-gray-100 font-bold px-6 py-3 rounded-xl text-lg shadow-lg transition-all duration-200 border-2 border-[#D40F14] hover:scale-105 whitespace-nowrap"
               onClick={handleEnrollNow}
             >
               Enroll Now
@@ -167,7 +346,6 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
           </div>
         </div>
       </div>
-
       {/* Batch Information */}
       <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 border border-green-200 shadow-sm">
         <div className="flex items-center mb-6">
@@ -271,41 +449,7 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
       )}
 
       {/* Enroll Now Modal */}
-      {showEnrollModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full flex flex-col items-center">
-            <h2 className="text-2xl font-bold mb-6 text-[#D40F14]">Enroll in this Workshop</h2>
-            <div className="flex flex-col gap-4 w-full">
-              <Link
-                href="/student-registration"
-                className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 px-6 rounded-lg text-center transition-all duration-200 shadow-md hover:shadow-lg"
-              >
-                New Registration
-              </Link>
-              <button
-                className="w-full bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
-                onClick={() => {
-                  handleCloseModal();
-                  // Trigger already registered flow (e.g., scroll to or open verification modal)
-                  const btn = document.getElementById("continue-to-payment-btn");
-                  if (btn) {
-                    btn.scrollIntoView({ behavior: "smooth", block: "center" });
-                    btn.click();
-                  }
-                }}
-              >
-                Already Registered
-              </button>
-            </div>
-            <button
-              className="mt-6 text-gray-500 hover:text-gray-700 text-sm"
-              onClick={handleCloseModal}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+      {/* REMOVE: Enroll Now Modal rendering here */}
     </div>
   );
-} 
+}

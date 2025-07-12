@@ -12,55 +12,58 @@ const DEFAULT_CATEGORIES = ["iACE Series", "Self-growth", "The Strength of She"]
 const SAMPLE_WORKSHOPS = [
   {
     id: "sample-1",
-    title: "Leadership Development",
+    name: "Leadership Development",
     slug: "leadership-development",
     description: "Develop essential leadership skills to inspire and guide your team to success.",
     image: "/diverse-group-leadership.png",
-    sessions: 6,
-    duration: "2 hours per session",
+    sessions_r: 6,
+    duration_v: "2",
+    duration_u: "hours",
     capacity: 15,
-    price: 5999,
+    fee: 5999,
     featured: true,
     status: "active",
     benefits: ["Improve team communication", "Learn effective delegation", "Develop strategic thinking"],
     workshop_code: "LED1234",
-    category: "Self-growth",
+    category_id: "Self-growth",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
   {
     id: "sample-2",
-    title: "Public Speaking Mastery",
+    name: "Public Speaking Mastery",
     slug: "public-speaking-mastery",
     description: "Overcome fear and master the art of public speaking with confidence and clarity.",
     image: "/public-speaking-stage.png",
-    sessions: 4,
-    duration: "3 hours per session",
+    sessions_r: 4,
+    duration_v: "3",
+    duration_u: "hours",
     capacity: 12,
-    price: 4999,
+    fee: 4999,
     featured: true,
     status: "active",
     benefits: ["Overcome stage fright", "Structure compelling presentations", "Engage any audience"],
     workshop_code: "PSM5678",
-    category: "iACE Series",
+    category_id: "iACE Series",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
   {
     id: "sample-3",
-    title: "Women's Leadership Summit",
+    name: "Women's Leadership Summit",
     slug: "womens-leadership-summit",
     description: "Empower yourself with leadership skills specifically designed for women in the workplace.",
     image: "/placeholder.svg?key=junp9",
-    sessions: 3,
-    duration: "4 hours per session",
+    sessions_r: 3,
+    duration_v: "4",
+    duration_u: "hours",
     capacity: 15,
-    price: 6999,
+    fee: 6999,
     featured: true,
     status: "active",
     benefits: ["Navigate workplace challenges", "Build confidence", "Create support networks"],
     workshop_code: "WLS3456",
-    category: "The Strength of She",
+    category_id: "The Strength of She",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
@@ -258,7 +261,7 @@ export const getActiveWorkshopCategories = cache(async () => {
     const categoriesWithWorkshops = [
       ...new Set(
         workshops
-          .map((workshop) => workshop.category)
+          .map((workshop) => workshop.category_id)
           .filter(Boolean), // Remove null/undefined
       ),
     ]
@@ -290,7 +293,7 @@ export const getWorkshopsByCategory = cache(async (category: string) => {
     if (error) throw error
 
     // Filter workshops by category
-    const filteredWorkshops = allWorkshops.filter((workshop) => workshop.category === category)
+    const filteredWorkshops = allWorkshops.filter((workshop) => workshop.category_id === category)
 
     return { data: filteredWorkshops, error: null }
   } catch (error) {
@@ -305,7 +308,7 @@ export async function createWorkshop(workshopData) {
 
     // Generate a workshop code if not provided
     if (!workshopData.workshop_code) {
-      const prefix = workshopData.title
+      const prefix = workshopData.name
         .split(" ")
         .map((word) => word.charAt(0).toUpperCase())
         .join("")
@@ -321,36 +324,41 @@ export async function createWorkshop(workshopData) {
     const { data, error } = await supabase
       .from(TABLES.WORKSHOPS)
       .insert({
-        title: workshopData.title,
+        name: workshopData.name,
         slug: workshopData.slug,
         description: workshopData.description,
         image: workshopData.image || "",
-        sessions: Number(workshopData.sessions) || 4,
-        duration: workshopData.duration || "2 hours per session",
+        sessions_r: Number(workshopData.sessions_r) || 4,
+        duration_v: workshopData.duration_v || "2",
+        duration_u: workshopData.duration_u || "hours",
         capacity: Number(workshopData.capacity) || 15,
-        price: Number(workshopData.price) || 4999,
+        fee: Number(workshopData.fee) || 4999,
         featured: Boolean(workshopData.featured),
         status: workshopData.status || "active",
         benefits: workshopData.benefits || ["Learn valuable skills"],
         workshop_code: workshopData.workshop_code,
         zoom_link: workshopData.zoomLink || null,
-        category: workshopData.category || null,
+        category_id: workshopData.category_id || null,
+        instructor: workshopData.instructor || null,
+        minutes_p: workshopData.minutes_p || 0,
+        start_date: workshopData.start_date || null,
+        session_start_time: workshopData.session_start_time || null,
       })
       .select()
 
     if (error) throw error
 
     // Create a batch if startDate is provided
-    if (workshopData.startDate && data && data.length > 0) {
+    if (workshopData.start_date && data && data.length > 0) {
       const workshopId = data[0].id
       const batchData = {
         workshop_id: workshopId,
-        date: workshopData.startDate,
+        date: workshopData.start_date,
         time:
-          workshopData.startTime && workshopData.endTime
-            ? `${workshopData.startTime} - ${workshopData.endTime}`
-            : workshopData.startTime
-              ? `${workshopData.startTime} - TBD`
+          workshopData.session_start_time && workshopData.session_end_time
+            ? `${workshopData.session_start_time} - ${workshopData.session_end_time}`
+            : workshopData.session_start_time
+              ? `${workshopData.session_start_time} - TBD`
               : "10:00 - 12:00",
         slots: Number(workshopData.capacity) || 15,
         enrolled: 0,
@@ -375,19 +383,24 @@ export async function updateWorkshop(id, workshopData) {
 
     // Prepare the update data
     const updateData = {
-      title: workshopData.title,
+      name: workshopData.name,
       slug: workshopData.slug,
       description: workshopData.description,
       image: workshopData.image || "",
-      sessions: Number(workshopData.sessions) || 4,
-      duration: workshopData.duration || "2 hours per session",
+      sessions_r: Number(workshopData.sessions_r) || 4,
+      duration_v: workshopData.duration_v || "2",
+      duration_u: workshopData.duration_u || "hours",
       capacity: Number(workshopData.capacity) || 15,
-      price: Number(workshopData.price) || 4999,
+      fee: Number(workshopData.fee) || 4999,
       featured: Boolean(workshopData.featured),
       status: workshopData.status || "active",
       benefits: workshopData.benefits || ["Learn valuable skills"],
       zoom_link: workshopData.zoomLink || null,
-      category: workshopData.category || null,
+      category_id: workshopData.category_id || null,
+      instructor: workshopData.instructor || null,
+      minutes_p: workshopData.minutes_p || 0,
+      start_date: workshopData.start_date || null,
+      session_start_time: workshopData.session_start_time || null,
       updated_at: new Date().toISOString(),
     }
 
@@ -396,7 +409,7 @@ export async function updateWorkshop(id, workshopData) {
     if (error) throw error
 
     // Update or create a batch if startDate is provided
-    if (workshopData.startDate) {
+    if (workshopData.start_date) {
       // Check if a batch already exists
       const { data: existingBatches } = await supabase
         .from(TABLES.WORKSHOP_BATCHES)
@@ -406,12 +419,12 @@ export async function updateWorkshop(id, workshopData) {
 
       const batchData = {
         workshop_id: id,
-        date: workshopData.startDate,
+        date: workshopData.start_date,
         time:
-          workshopData.startTime && workshopData.endTime
-            ? `${workshopData.startTime} - ${workshopData.endTime}`
-            : workshopData.startTime
-              ? `${workshopData.startTime} - TBD`
+          workshopData.session_start_time && workshopData.session_end_time
+            ? `${workshopData.session_start_time} - ${workshopData.session_end_time}`
+            : workshopData.session_start_time
+              ? `${workshopData.session_start_time} - TBD`
               : "10:00 - 12:00",
         slots: Number(workshopData.capacity) || 15,
       }
@@ -524,7 +537,7 @@ export async function deleteBatch(id) {
 
     return { success: true, error: null }
   } catch (error) {
-    console.error(`Error deleting batch ${id}:`, error)
-    return { success: false, error: error.message }
+    console.error(`Error deleting batch:`, error);
+    return { success: false, error: (error as Error).message };
   }
 }

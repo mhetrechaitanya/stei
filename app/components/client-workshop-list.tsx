@@ -52,7 +52,7 @@ export default function ClientWorkshopList({ initialWorkshops = [], categories =
           if (currentCategory === "all") {
             setFilteredWorkshops(data)
           } else {
-            const filtered = data.filter((workshop) => workshop.category === currentCategory)
+            const filtered = data.filter((workshop) => workshop.category_id === currentCategory)
             setFilteredWorkshops(filtered)
           }
           setLastRefreshed(new Date().toLocaleTimeString())
@@ -88,7 +88,7 @@ export default function ClientWorkshopList({ initialWorkshops = [], categories =
       if (category === "all") {
         setFilteredWorkshops(workshops)
       } else {
-        const filtered = workshops.filter((workshop) => workshop.category === category)
+        const filtered = workshops.filter((workshop) => workshop.category_id === category)
         setFilteredWorkshops(filtered)
       }
     } catch (err) {
@@ -117,7 +117,7 @@ export default function ClientWorkshopList({ initialWorkshops = [], categories =
 
   // Filter categories to only show those with workshops
   const activeCategories = categories.filter(
-    (cat) => cat.toLowerCase() === "all" || workshops.some((workshop) => workshop.category === cat),
+    (cat) => typeof cat === 'string' && cat.toLowerCase() === "all" || workshops.some((workshop) => workshop.category_id === cat)
   )
 
   return (
@@ -176,10 +176,12 @@ export default function ClientWorkshopList({ initialWorkshops = [], categories =
       )}
 
       {/* Workshops Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:participantsparticipantsgrid-cols-3 gap-6">
-        {filteredWorkshops.map((workshop) => (
-          <EnhancedWorkshopCard key={workshop.id} workshop={workshop} />
-        ))}
+      <div className="px-4 md:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredWorkshops.map((workshop) => (
+            <EnhancedWorkshopCard key={workshop.id} workshop={workshop} />
+          ))}
+        </div>
       </div>
 
       {/* No Results Message */}

@@ -147,11 +147,11 @@ export default async function BookingLandingPage({
   // Sanitize the workshop data for security
   const sanitizedWorkshop = {
     id: selectedWorkshop.id,
-    title: selectedWorkshop.title || "Workshop",
+    title: selectedWorkshop.title || selectedWorkshop.name || "Workshop",
     description: selectedWorkshop.description || "No description available",
     price:
       typeof selectedWorkshop.fee === "number" ? selectedWorkshop.fee : 0,
-    image: "/placeholder.svg?height=400&width=600",
+    image: selectedWorkshop.image || "/placeholder.svg?height=400&width=600",
     batches: Array.isArray(selectedWorkshop.batches)
       ? selectedWorkshop.batches
       : [],
@@ -162,6 +162,15 @@ export default async function BookingLandingPage({
     testimonials: Array.isArray(selectedWorkshop.testimonials)
       ? selectedWorkshop.testimonials
       : [],
+    // Add schedule-related fields
+    duration_v: selectedWorkshop.duration_v,
+    duration_u: selectedWorkshop.duration_u,
+    sessions_r: selectedWorkshop.sessions_r,
+    minutes_p: selectedWorkshop.minutes_p,
+    start_date: selectedWorkshop.start_date,
+    session_start_time: selectedWorkshop.session_start_time,
+    sessions_per_day: selectedWorkshop.sessions_per_day,
+    capacity: selectedWorkshop.capacity,
   };
 
   return (
@@ -169,7 +178,7 @@ export default async function BookingLandingPage({
       {/* Hero Section */}
       <div className="relative h-[300px] overflow-hidden">
         <Image
-          src="/placeholder.svg?height=400&width=600"
+          src={sanitizedWorkshop.image || "/placeholder.svg?height=400&width=600"}
           alt="Workshop Registration"
           fill
           className="object-cover"
@@ -282,8 +291,10 @@ export default async function BookingLandingPage({
         </div>
       </div>
 
-      {/* Client-side only booking flow */}
-      <ClientWrapper workshop={sanitizedWorkshop} />
+      {/* Client-side only booking flow - Hidden content, only handles modals/overlays */}
+      <div className="absolute -top-[9999px] -left-[9999px] w-0 h-0 overflow-hidden">
+        <ClientWrapper workshop={sanitizedWorkshop} />
+      </div>
     </div>
   );
 }

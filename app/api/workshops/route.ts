@@ -312,7 +312,7 @@ export async function GET(request: Request) {
     console.log("Fetching all workshops");
     const { data, error } = await supabase
       .from("workshops")
-      .select("*, batches(*)")
+      .select("*, batches:workshop_batches(*)")
       .order("created_at", { ascending: false });
 
     console.log("in workshop route : ", data);
@@ -339,7 +339,7 @@ export async function GET(request: Request) {
       // Fetch again after creating samples
       const { data: sampleData, error: sampleError } = await supabase
         .from("workshops")
-        .select("*, batches(*)")
+        .select("*, batches:workshop_batches(*)")
         .order("created_at", { ascending: false });
 
       if (sampleError) {
@@ -347,17 +347,35 @@ export async function GET(request: Request) {
         return NextResponse.json([], { headers });
       }
 
+      // Transform the sample data to include compatibility field names
+      const transformedSampleData = sampleData?.map(workshop => ({
+        ...workshop,
+        title: workshop.name,
+        price: workshop.fee,
+        sessions: workshop.sessions_r,
+        duration: workshop.duration_v && workshop.duration_u ? `${workshop.duration_v} ${workshop.duration_u}` : "2 hours per session",
+      })) || [];
+
       console.log(
         `Successfully created and fetched ${
-          sampleData?.length || 0
+          transformedSampleData?.length || 0
         } sample workshops`
       );
-      return NextResponse.json(sampleData || [], { headers });
+      return NextResponse.json(transformedSampleData, { headers });
     }
 
-    console.log(`Successfully fetched ${data?.length || 0} workshops`);
-    console.log(data)
-    return NextResponse.json(data || [], { headers });
+    // Transform the data to include compatibility field names
+    const transformedData = data?.map(workshop => ({
+      ...workshop,
+      title: workshop.name,
+      price: workshop.fee,
+      sessions: workshop.sessions_r,
+      duration: workshop.duration_v && workshop.duration_u ? `${workshop.duration_v} ${workshop.duration_u}` : "2 hours per session",
+    })) || [];
+
+    console.log(`Successfully fetched ${transformedData?.length || 0} workshops`);
+    console.log(transformedData)
+    return NextResponse.json(transformedData, { headers });
   } catch (error) {
     console.error("Unexpected error in GET workshops:", error);
     return NextResponse.json(

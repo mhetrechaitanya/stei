@@ -77,6 +77,7 @@ export default function UniqueFeatures() {
     image: string
     fullText: string
   } | null>(null)
+  const [showWorkshopTestimonialPopup, setShowWorkshopTestimonialPopup] = useState(false)
   const sectionRef = useRef<HTMLDivElement>(null)
   const [showFounderPopup, setShowFounderPopup] = useState(false)
 
@@ -88,6 +89,32 @@ export default function UniqueFeatures() {
   const closeTestimonialPopup = () => {
     setShowTestimonialPopup(false)
   }
+
+  const openWorkshopTestimonialPopup = () => {
+    setShowWorkshopTestimonialPopup(true)
+  }
+
+  const closeWorkshopTestimonialPopup = () => {
+    setShowWorkshopTestimonialPopup(false)
+  }
+
+  // Workshop testimonials data
+  const workshopTestimonials = [
+    {
+      name: "Amit",
+      company: "Agribid Private Limited",
+      designation: "Software Tester",
+      testimonial: "The iACE Interviews workshop gave me clear ideas about what HR people look for in candidates. It helped me see my strengths and match them to the company's goals. The hands-on approach also boosted my confidence.",
+      image: "/images/testimonials/amit.jpg"
+    },
+    {
+      name: "Gaurav",
+      company: "Agribid Private Limited", 
+      designation: "Product Manager",
+      testimonial: "The iACE Interviews workshop showed me what HR professionals expect. It helped me see my strengths more clearly and how they fit the company's goals.",
+      image: "/images/testimonials/gaurav.jpg"
+    }
+  ]
 
   return (
     <section ref={sectionRef} className="py-16 md:py-24 bg-white">
@@ -250,6 +277,15 @@ export default function UniqueFeatures() {
                     common and behavioural questions effectively whilst presenting oneself professionally. Gain
                     practical tips and insight on addressing FAQs by HR to enhance your chances of success.
                   </p>
+                  
+                  <div className="mt-6">
+                    <button
+                      onClick={openWorkshopTestimonialPopup}
+                      className="bg-[#D40F14] text-white px-6 py-3 rounded-full font-bold hover:bg-[#B00D11] transition-colors duration-300"
+                    >
+                      See What Our Participants Say
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -531,6 +567,79 @@ export default function UniqueFeatures() {
             </div>
           </div>
         )}
+
+        {/* Workshop Testimonial Popup */}
+        {showWorkshopTestimonialPopup && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6 md:p-8">
+                <div className="flex justify-between items-start mb-8">
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">Workshop Participants Experience</h3>
+                    <p className="text-gray-600">Hear from our iACE Interviews workshop participants</p>
+                    <br></br>
+                    <br></br>
+
+                  </div>
+                  <button
+                    onClick={closeWorkshopTestimonialPopup}
+                    className="text-gray-500 hover:text-gray-700"
+                    aria-label="Close"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                  {workshopTestimonials.map((testimonial, index) => (
+                    <div key={index} className="bg-gray-50 rounded-xl shadow-lg p-6 relative">
+                      <div className="absolute -top-12 left-1/2 transform -translate-x-1/2">
+                        <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-md">
+                          <Image
+                            src={testimonial.image || "/placeholder.svg"}
+                            alt={testimonial.name}
+                            width={96}
+                            height={96}
+                            className="object-cover w-full h-full"
+                          />
+                        </div>
+                      </div>
+                      <div className="pt-14 text-center">
+                        <svg className="w-8 h-8 mx-auto mb-4 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                        </svg>
+                        <p className="text-gray-700 mb-4 text-base leading-relaxed">
+                          "{testimonial.testimonial}"
+                        </p>
+                        <h4 className="text-xl font-bold text-gray-800 mt-4">{testimonial.name}</h4>
+                        <p className="text-[#D40F14] font-medium text-lg">{testimonial.designation}</p>
+                        <p className="text-gray-600 text-base">{testimonial.company}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="text-center">
+                  <button
+                    onClick={closeWorkshopTestimonialPopup}
+                    className="bg-[#D40F14] text-white px-6 py-2 rounded-full hover:bg-[#B00D11] transition-colors duration-300"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Founder Popup */}
         <FounderPopup isOpen={showFounderPopup} onClose={() => setShowFounderPopup(false)} />
       </div>

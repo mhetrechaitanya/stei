@@ -84,8 +84,8 @@ export default function PaymentDetails({
           order_amount: workshopData.price,
           customer_id: String(studentData.id || "anon"), // ✅ Force string
           customer_phone: studentData.phone || "9999999999",
-          batchId: selectedBatch.id,
-          workshopId: workshopData.id,
+          batchId: String(selectedBatch.id),
+          workshopId: String(workshopData.id),
         }),
       });
       
@@ -151,9 +151,9 @@ export default function PaymentDetails({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          studentId: studentData.id,
-          workshopId: workshopData.id,
-          batchId: selectedBatch.id,
+          studentId: String(studentData.id),
+          workshopId: String(workshopData.id),
+          batchId: String(selectedBatch.id),
           orderId,
           amount: 0,
           paymentStatus: "completed",

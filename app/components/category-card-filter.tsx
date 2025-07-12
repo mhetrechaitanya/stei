@@ -30,19 +30,19 @@ export default function CategoryCardFilter({ categories = ["All"] }: CategoryCar
   return (
     <div className="mb-8">
       <h2 className="text-lg font-medium mb-4">Filter by Category</h2>
-      <div className="flex flex-wrap gap-3">
+      {/* <div className="flex flex-wrap gap-3">
         {displayCategories.map((category) => (
-          <button
-            key={category}
-            onClick={() => handleCategoryChange(category)}
-            className={`px-4 py-2 rounded-full transition-all ${
-              selectedCategory === category ? "bg-[#D40F14] text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            <StyledCategoryLabel category={category} />
-          </button>
+          // <button
+          //   key={category}
+          //   onClick={() => handleCategoryChange(category)}
+          //   className={`px-4 py-2 rounded-full transition-all ${
+          //     selectedCategory === category ? "bg-[#D40F14] text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+          //   }`}
+          // >
+          //   <StyledCategoryLabel category={category} />
+          // </button>
         ))}
-      </div>
+      </div> */}
     </div>
   )
 }

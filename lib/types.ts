@@ -1,27 +1,19 @@
 export interface Workshop {
-  id?: number
-  title: string
-  slug: string
-  description: string
-  image: string
-  sessions: number
-  duration: string
-  capacity: number
-  price: number
-  featured: boolean
-  status: string
-  benefits: string[]
-  workshop_code?: string
-  zoomLink?: string
-  category?: string // Add this line
-  upcoming?: {
-    id?: number
-    date: string
-    time: string
-    slots: number
-    enrolled: number
-  }[]
-  createdAt?: string
-  updatedAt?: string
-  affiliates?: any[]
+  id?: string;
+  name: string;
+  description: string;
+  category_id: string;
+  fee: number;
+  capacity: number;
+  instructor: string;
+  status: string;
+  created_at?: string;
+  updated_at?: string;
+  image?: string;
+  duration_v: number;
+  duration_u: string;
+  sessions_r: number;
+  minutes_p: number;
+  start_date: string;
+  session_start_time: string;
 }

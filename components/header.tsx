@@ -102,33 +102,33 @@ export default function Header() {
 
   return (
     <header ref={headerRef} className="w-full bg-[#D40F14] text-white relative z-40">
-      <div className="container mx-auto px-4 py-2">
+      <div className="container mx-auto px-4 py-4">
         <div className="flex flex-col md:flex-row items-center">
           {/* Logo */}
-          <div className="flex items-center py-2 md:mr-8">
+          <div className="flex items-center py-3 md:mr-8">
             <Logo />
           </div>
 
           {/* Navigation Container with Black Background and Curved Borders */}
           {!isAdmin && (
             <div className="validnavs w-full md:flex-1">
-              <div className="container bg-black py-2 px-4 rounded-full shadow-md">
+              <div className="container bg-black py-4 px-6 rounded-full shadow-md">
                 {/* Desktop Navigation - Centered */}
-                <nav className="hidden md:flex justify-center space-x-4">
+                <nav className="hidden md:flex justify-center space-x-6">
                   {safeNavigation.map((item) => (
                     <div key={item.name} className="relative group">
                       {item.subItems && item.subItems.length > 0 ? (
                         <button
                           onClick={(e) => e.preventDefault()}
-                          className="flex items-center text-white hover:text-white/80 font-medium transition-colors px-4 py-2"
+                          className="flex items-center text-white hover:text-white/80 font-medium transition-colors px-6 py-3 text-lg"
                         >
                           {item.name}
-                          <ChevronDown className="ml-1 h-4 w-4" />
+                          <ChevronDown className="ml-1 h-5 w-5" />
                         </button>
                       ) : (
                         <Link
                           href={item.href}
-                          className="flex items-center text-white hover:text-white/80 font-medium transition-colors px-4 py-2"
+                          className="flex items-center text-white hover:text-white/80 font-medium transition-colors px-6 py-3 text-lg"
                         >
                           {item.name}
                         </Link>
@@ -155,7 +155,7 @@ export default function Header() {
                     aria-label={isMenuOpen ? "Close menu" : "Open menu"}
                     aria-expanded={isMenuOpen}
                   >
-                    {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                    {isMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
                   </button>
                 </div>
               </div>
@@ -198,17 +198,12 @@ function HoverDropdownItem({
     <div className="relative group/subitem">
       <Link
         href={item.href || "#"}
-        className={cn(
-          "block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 flex items-center justify-between",
-          depth > 0 && "pl-8",
-        )}
+        className="block px-4 py-3 text-base text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
       >
-        <span>{item.name}</span>
-        {hasSubItems && <ChevronDown className="h-4 w-4" />}
+        {item.name}
       </Link>
-
       {hasSubItems && (
-        <div className="absolute left-full top-0 w-64 bg-white rounded-md shadow-lg z-50 opacity-0 invisible group-hover/subitem:opacity-100 group-hover/subitem:visible transition-all duration-300">
+        <div className="absolute left-full top-0 ml-1 w-64 bg-white rounded-md shadow-lg z-50 opacity-0 invisible group-hover/subitem:opacity-100 group-hover/subitem:visible transition-all duration-300 border border-gray-200">
           <div className="py-1">
             {item.subItems.map((subItem: any) => (
               <HoverDropdownItem key={subItem.name} item={subItem} depth={depth + 1} />

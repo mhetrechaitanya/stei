@@ -6,16 +6,21 @@ import type { Workshop } from "@/lib/types"
 import { TABLES } from "@/lib/supabase-config"
 
 interface NewWorkshop {
-  title: string
+  name: string
   description: string
-  price: number
-  sessions: number
-  duration: string
+  fee: number
+  sessions_r: number
+  duration_v: string
+  duration_u: string
   capacity: number
-  category: string
+  category_id: string
   image: string
   slug: string
-  mentor_id?: string
+  instructor: string
+  status: string
+  minutes_p: number
+  start_date: string
+  session_start_time: string
 }
 
 interface Mentor {
@@ -32,15 +37,21 @@ export default function WorkshopManager() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [newWorkshop, setNewWorkshop] = useState<NewWorkshop>({
-    title: "",
+    name: "",
     description: "",
-    price: 4999,
-    sessions: 4,
-    duration: "2 hours per session",
+    fee: 4999,
+    sessions_r: 4,
+    duration_v: "2 hours",
+    duration_u: "per session",
     capacity: 15,
-    category: "",
+    category_id: "",
     image: "",
     slug: "",
+    instructor: "",
+    status: "active",
+    minutes_p: 120,
+    start_date: "",
+    session_start_time: "10:00 AM",
   })
   const [isAdding, setIsAdding] = useState(false)
   const [editingWorkshop, setEditingWorkshop] = useState<Workshop | null>(null)
@@ -109,15 +120,15 @@ export default function WorkshopManager() {
 
   // Add new workshop
   const handleAddWorkshop = async () => {
-    if (!newWorkshop.title || !newWorkshop.description) {
-      setError("Workshop title and description are required")
+    if (!newWorkshop.name || !newWorkshop.description) {
+      setError("Workshop name and description are required")
       return
     }
 
     try {
       // Generate slug if not provided
       if (!newWorkshop.slug) {
-        newWorkshop.slug = newWorkshop.title
+        newWorkshop.slug = newWorkshop.name
           .toLowerCase()
           .replace(/[^\w\s-]/g, "")
           .replace(/\s+/g, "-")
@@ -140,15 +151,21 @@ export default function WorkshopManager() {
       if (result.success) {
         fetchWorkshops() // Refresh the list
         setNewWorkshop({
-          title: "",
+          name: "",
           description: "",
-          price: 4999,
-          sessions: 4,
-          duration: "2 hours per session",
+          fee: 4999,
+          sessions_r: 4,
+          duration_v: "2 hours",
+          duration_u: "per session",
           capacity: 15,
-          category: "",
+          category_id: "",
           image: "",
           slug: "",
+          instructor: "",
+          status: "active",
+          minutes_p: 120,
+          start_date: "",
+          session_start_time: "10:00 AM",
         })
         setIsAdding(false)
         showSuccess("Workshop added successfully")
@@ -395,14 +412,14 @@ export default function WorkshopManager() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title <span className="text-red-500">*</span>
+                Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                value={newWorkshop.title}
-                onChange={(e) => setNewWorkshop({ ...newWorkshop, title: e.target.value })}
+                value={newWorkshop.name}
+                onChange={(e) => setNewWorkshop({ ...newWorkshop, name: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
-                placeholder="Workshop title"
+                placeholder="Workshop name"
                 required
               />
             </div>
@@ -434,11 +451,11 @@ export default function WorkshopManager() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Fee (₹)</label>
               <input
                 type="number"
-                value={newWorkshop.price}
-                onChange={(e) => setNewWorkshop({ ...newWorkshop, price: Number(e.target.value) })}
+                value={newWorkshop.fee}
+                onChange={(e) => setNewWorkshop({ ...newWorkshop, fee: Number(e.target.value) })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
                 placeholder="4999"
               />
@@ -447,8 +464,8 @@ export default function WorkshopManager() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Sessions</label>
               <input
                 type="number"
-                value={newWorkshop.sessions}
-                onChange={(e) => setNewWorkshop({ ...newWorkshop, sessions: Number(e.target.value) })}
+                value={newWorkshop.sessions_r}
+                onChange={(e) => setNewWorkshop({ ...newWorkshop, sessions_r: Number(e.target.value) })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
                 placeholder="4"
               />
@@ -470,37 +487,72 @@ export default function WorkshopManager() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Duration</label>
               <input
                 type="text"
-                value={newWorkshop.duration}
-                onChange={(e) => setNewWorkshop({ ...newWorkshop, duration: e.target.value })}
+                value={`${newWorkshop.duration_v} ${newWorkshop.duration_u}`}
+                onChange={(e) => {
+                  const [value, unit] = e.target.value.split(" ");
+                  setNewWorkshop({ ...newWorkshop, duration_v: value, duration_u: unit });
+                }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
-                placeholder="2 hours per session"
+                placeholder="2 hours"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <select
-                value={newWorkshop.category}
-                onChange={(e) => setNewWorkshop({ ...newWorkshop, category: e.target.value })}
+              <label className="block text-sm font-medium text-gray-700 mb-1">Minutes per session</label>
+              <input
+                type="number"
+                value={newWorkshop.minutes_p}
+                onChange={(e) => setNewWorkshop({ ...newWorkshop, minutes_p: Number(e.target.value) })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
-              >
-                <option value="">Select a category</option>
-                {categories.map((category, index) => (
-                  <option key={index} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+                placeholder="120"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+              <input
+                type="date"
+                value={newWorkshop.start_date}
+                onChange={(e) => setNewWorkshop({ ...newWorkshop, start_date: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Session Start Time</label>
+              <input
+                type="time"
+                value={newWorkshop.session_start_time}
+                onChange={(e) => setNewWorkshop({ ...newWorkshop, session_start_time: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
+              />
             </div>
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Mentor</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
             <select
-              value={newWorkshop.mentor_id || ""}
-              onChange={(e) => setNewWorkshop({ ...newWorkshop, mentor_id: e.target.value })}
+              value={newWorkshop.category_id || ""}
+              onChange={(e) => setNewWorkshop({ ...newWorkshop, category_id: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
             >
-              <option value="">Select a mentor</option>
+              <option value="">Select a category</option>
+              {categories.map((category, index) => (
+                <option key={index} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Instructor</label>
+            <select
+              value={newWorkshop.instructor || ""}
+              onChange={(e) => setNewWorkshop({ ...newWorkshop, instructor: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
+            >
+              <option value="">Select an instructor</option>
               {mentors.map((mentor) => (
                 <option key={mentor.id} value={mentor.id}>
                   {mentor.name} {mentor.title ? `(${mentor.title})` : ""}
@@ -525,15 +577,21 @@ export default function WorkshopManager() {
               onClick={() => {
                 setIsAdding(false)
                 setNewWorkshop({
-                  title: "",
+                  name: "",
                   description: "",
-                  price: 4999,
-                  sessions: 4,
-                  duration: "2 hours per session",
+                  fee: 4999,
+                  sessions_r: 4,
+                  duration_v: "2 hours",
+                  duration_u: "per session",
                   capacity: 15,
-                  category: "",
+                  category_id: "",
                   image: "",
                   slug: "",
+                  instructor: "",
+                  status: "active",
+                  minutes_p: 120,
+                  start_date: "",
+                  session_start_time: "10:00 AM",
                 })
               }}
               className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-100 transition-colors"
@@ -555,13 +613,25 @@ export default function WorkshopManager() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Category
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fee</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Sessions
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Duration
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Capacity
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Instructor
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
               </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
@@ -571,7 +641,7 @@ export default function WorkshopManager() {
           <tbody className="bg-white divide-y divide-gray-200">
             {workshops.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                <td colSpan={9} className="px-6 py-4 text-center text-gray-500">
                   No workshops found. Add your first workshop!
                 </td>
               </tr>
@@ -582,19 +652,19 @@ export default function WorkshopManager() {
                     {editingWorkshop?.id === workshop.id ? (
                       <input
                         type="text"
-                        value={editingWorkshop.title}
-                        onChange={(e) => setEditingWorkshop({ ...editingWorkshop, title: e.target.value })}
+                        value={editingWorkshop.name}
+                        onChange={(e) => setEditingWorkshop({ ...editingWorkshop, name: e.target.value })}
                         className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
                       />
                     ) : (
-                      <div className="font-medium text-gray-900">{workshop.title}</div>
+                      <div className="font-medium text-gray-900">{workshop.name}</div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {editingWorkshop?.id === workshop.id ? (
                       <select
-                        value={editingWorkshop.category || ""}
-                        onChange={(e) => setEditingWorkshop({ ...editingWorkshop, category: e.target.value })}
+                        value={editingWorkshop.category_id || ""}
+                        onChange={(e) => setEditingWorkshop({ ...editingWorkshop, category_id: e.target.value })}
                         className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
                       >
                         <option value="">Select a category</option>
@@ -606,7 +676,7 @@ export default function WorkshopManager() {
                       </select>
                     ) : (
                       <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
-                        {workshop.category || "Uncategorized"}
+                        {workshop.category_id || "Uncategorized"}
                       </span>
                     )}
                   </td>
@@ -614,24 +684,86 @@ export default function WorkshopManager() {
                     {editingWorkshop?.id === workshop.id ? (
                       <input
                         type="number"
-                        value={editingWorkshop.price}
-                        onChange={(e) => setEditingWorkshop({ ...editingWorkshop, price: Number(e.target.value) })}
+                        value={editingWorkshop.fee}
+                        onChange={(e) => setEditingWorkshop({ ...editingWorkshop, fee: Number(e.target.value) })}
                         className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
                       />
                     ) : (
-                      <div className="text-gray-900">₹{workshop.price.toLocaleString()}</div>
+                      <div className="text-gray-900">₹{workshop.fee.toLocaleString()}</div>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {editingWorkshop?.id === workshop.id ? (
                       <input
                         type="number"
-                        value={editingWorkshop.sessions}
-                        onChange={(e) => setEditingWorkshop({ ...editingWorkshop, sessions: Number(e.target.value) })}
+                        value={editingWorkshop.sessions_r}
+                        onChange={(e) => setEditingWorkshop({ ...editingWorkshop, sessions_r: Number(e.target.value) })}
                         className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
                       />
                     ) : (
-                      <div className="text-gray-900">{workshop.sessions}</div>
+                      <div className="text-gray-900">{workshop.sessions_r}</div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {editingWorkshop?.id === workshop.id ? (
+                      <input
+                        type="text"
+                        value={`${editingWorkshop.duration_v} ${editingWorkshop.duration_u}`}
+                        onChange={(e) => {
+                          const [value, unit] = e.target.value.split(" ");
+                          setEditingWorkshop({ ...editingWorkshop, duration_v: value, duration_u: unit });
+                        }}
+                        className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
+                      />
+                    ) : (
+                      <div className="text-gray-900">{`${workshop.duration_v} ${workshop.duration_u}`}</div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {editingWorkshop?.id === workshop.id ? (
+                      <input
+                        type="number"
+                        value={editingWorkshop.capacity}
+                        onChange={(e) => setEditingWorkshop({ ...editingWorkshop, capacity: Number(e.target.value) })}
+                        className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
+                      />
+                    ) : (
+                      <div className="text-gray-900">{workshop.capacity}</div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {editingWorkshop?.id === workshop.id ? (
+                      <select
+                        value={editingWorkshop.instructor || ""}
+                        onChange={(e) => setEditingWorkshop({ ...editingWorkshop, instructor: e.target.value })}
+                        className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
+                      >
+                        <option value="">Select an instructor</option>
+                        {mentors.map((mentor) => (
+                          <option key={mentor.id} value={mentor.id}>
+                            {mentor.name} {mentor.title ? `(${mentor.title})` : ""}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <div className="text-gray-900">{workshop.instructor ? mentors.find(m => m.id === workshop.instructor)?.name : "N/A"}</div>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {editingWorkshop?.id === workshop.id ? (
+                      <select
+                        value={editingWorkshop.status || ""}
+                        onChange={(e) => setEditingWorkshop({ ...editingWorkshop, status: e.target.value })}
+                        className="w-full px-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#D40F14]"
+                      >
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                    ) : (
+                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">
+                        {workshop.status || "N/A"}
+                      </span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

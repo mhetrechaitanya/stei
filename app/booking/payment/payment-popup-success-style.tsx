@@ -48,9 +48,9 @@ export default function PaymentPopupSuccessStyle({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          studentId,
-          workshopId,
-          batchId,
+          studentId: String(studentId),
+          workshopId: String(workshopId),
+          batchId: String(batchId),
           orderId,
           amount,
           paymentStatus: "completed",

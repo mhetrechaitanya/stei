@@ -5,6 +5,7 @@ import VerificationPopup from "./verification-popup"
 import BatchSelectionPopup from "./batch-selection-popup"
 import PaymentSummary from "./payment-summary"
 import { useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 
 interface AlreadyRegisteredCardProps {
   onContinueToPayment?: () => void
@@ -20,6 +21,9 @@ export default function AlreadyRegisteredCard({ onContinueToPayment }: AlreadyRe
   const [selectedBatch, setSelectedBatch] = useState(null)
   const [showPaymentSummary, setShowPaymentSummary] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const workshopId = searchParams.get("workshopId") || "1"
+  const batchId = searchParams.get("batchId") || "1"
 
   // Handle verification button click
   const handleContinueClick = () => {

@@ -21,7 +21,7 @@ export default async function WorkshopDetailPage({ params }: { params: { id: str
         <div className="relative h-[300px] md:h-[400px]">
           <Image
             src={workshop.image || "/placeholder.svg?height=400&width=1200"}
-            alt={workshop.title || "Workshop"}
+            alt={workshop.name || "Workshop"}
             fill
             className="object-cover"
             priority
@@ -37,7 +37,7 @@ export default async function WorkshopDetailPage({ params }: { params: { id: str
                 Back to Workshops
               </Link>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-                {workshop.title || "Workshop"}
+                {workshop.name || "Workshop"}
               </h1>
               <div className="w-20 h-1 bg-[#D40F14] mb-6" />
               <p className="text-lg text-white/90 max-w-2xl">
@@ -77,6 +77,163 @@ export default async function WorkshopDetailPage({ params }: { params: { id: str
                       </ul>
                     </>
                   )}
+                </div>
+              </div>
+
+              {/* Workshop Schedule & Details Section */}
+              <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
+                <h2 className="text-2xl font-bold mb-6">Workshop Schedule & Details</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* Duration */}
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                      <Clock className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-800">Total Duration</p>
+                      <p className="text-gray-600">
+                        {workshop.duration_value && workshop.duration_unit 
+                          ? `${workshop.duration_value} ${workshop.duration_unit}` 
+                          : "2 hours per session"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Sessions */}
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                      <Calendar className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-800">Total Sessions</p>
+                      <p className="text-gray-600">
+                        {workshop.sessions_per_day || 4} sessions
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Minutes per Session */}
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                      <Clock className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-800">Session Duration</p>
+                      <p className="text-gray-600">
+                        {workshop.minutes_per_session 
+                          ? `${workshop.minutes_per_session} minutes` 
+                          : "120 minutes"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Start Date */}
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                      <Calendar className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-800">Start Date</p>
+                      <p className="text-gray-600">
+                        {workshop.start_date 
+                          ? new Date(workshop.start_date).toLocaleDateString('en-GB', {
+                              day: '2-digit',
+                              month: 'long',
+                              year: 'numeric'
+                            })
+                          : "To be announced"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Session Start Time */}
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                      <Clock className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-800">Session Time</p>
+                      <p className="text-gray-600">
+                        {workshop.session_start_time || "10:00 AM"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Sessions per Day */}
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
+                      <Users className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-800">Sessions per Day</p>
+                      <p className="text-gray-600">
+                        {workshop.sessions_per_day || "1 session"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Additional Workshop Info */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <Users className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800">Batch Capacity</p>
+                        <p className="text-gray-600">
+                          Maximum {workshop.capacity || 15} participants per batch
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start space-x-3">
+                      <div className="flex-shrink-0 w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                        <CheckCircle className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800">Workshop Format</p>
+                        <p className="text-gray-600">
+                          Interactive live sessions with hands-on practice
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Enroll Now Section */}
+              <div className="bg-gradient-to-r from-[#D40F14] to-[#B00D11] rounded-xl shadow-lg p-8 mb-8 text-white">
+                <div className="text-center">
+                  <h2 className="text-3xl font-bold mb-4">Ready to Transform Your Skills?</h2>
+                  <p className="text-lg mb-6 text-white/90">
+                    Join hundreds of professionals who have already enhanced their careers through our workshops
+                  </p>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+                    <div className="flex items-center text-white/90">
+                      <Users className="h-5 w-5 mr-2" />
+                      <span>Limited seats available</span>
+                    </div>
+                    <div className="flex items-center text-white/90">
+                      <CheckCircle className="h-5 w-5 mr-2" />
+                      <span>Certificate provided</span>
+                    </div>
+                    <div className="flex items-center text-white/90">
+                      <Clock className="h-5 w-5 mr-2" />
+                      <span>Interactive sessions</span>
+                    </div>
+                  </div>
+                  <Link
+                    href={`/booking/landing?workshopId=${params.id}`}
+                    className="inline-flex items-center bg-white text-[#D40F14] font-bold py-4 px-8 rounded-lg hover:bg-gray-100 transition-all duration-300 text-lg"
+                  >
+                    <Calendar className="mr-2 h-6 w-6" />
+                    Enroll Now - Book Your Slot
+                  </Link>
+                  <p className="text-sm text-white/80 mt-4">
+                    Price: ₹{workshop.fee || 0} | {workshop.capacity || 15} seats per batch
+                  </p>
                 </div>
               </div>
 
@@ -153,7 +310,7 @@ export default async function WorkshopDetailPage({ params }: { params: { id: str
                       <div>
                         <p className="font-medium">Duration</p>
                         <p className="text-gray-600">
-                          {workshop.sessions || 1} sessions, {workshop.duration || "2 hours"} each
+                          {workshop.sessions_r || 1} sessions, {workshop.duration_v && workshop.duration_u ? `${workshop.duration_v} ${workshop.duration_u}` : "2 hours"} each
                         </p>
                       </div>
                     </div>
@@ -205,13 +362,13 @@ export default async function WorkshopDetailPage({ params }: { params: { id: str
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-lg font-bold">Price:</span>
-                    <span className="text-2xl font-bold text-[#D40F14]">₹{workshop.price || 0}</span>
+                    <span className="text-2xl font-bold text-[#D40F14]">₹{workshop.fee || 0}</span>
                   </div>
-                  {workshop.original_price && workshop.original_price > workshop.price && (
+                  {workshop.original_price && workshop.original_price > workshop.fee && (
                     <div className="text-right">
                       <span className="text-gray-500 line-through">₹{workshop.original_price}</span>
                       <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                        {Math.round(((workshop.original_price - workshop.price) / workshop.original_price) * 100)}% OFF
+                        {Math.round(((workshop.original_price - workshop.fee) / workshop.original_price) * 100)}% OFF
                       </span>
                     </div>
                   )}

@@ -53,6 +53,7 @@ export default function BatchCalendarSelector({
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<BatchTimeSlot | null>(null)
   const [selectedBatch, setSelectedBatch] = useState<Batch | null>(null)
   const [availableDates, setAvailableDates] = useState<Date[]>([])
+  const [allDatesSelected, setAllDatesSelected] = useState(false);
 
   // Create a map of dates to batches for easy lookup
   const [batchesByDate, setBatchesByDate] = useState<Record<string, Batch>>({})
@@ -118,13 +119,10 @@ export default function BatchCalendarSelector({
   // Handle date selection
   const handleDateClick = (date: Date) => {
     if (hasBatches(date)) {
-      setSelectedDate(date)
-      setSelectedTimeSlot(null)
-
-      // Get the batch for this date
-      const dateKey = format(date, "yyyy-MM-dd")
-      const batch = batchesByDate[dateKey]
-      setSelectedBatch(batch)
+      setSelectedDate(date);
+      setSelectedTimeSlot(null);
+      setAllDatesSelected(true); // Automatically select all dates
+      // Optionally, you can call onBatchSelected for all batches here if needed
     }
   }
 

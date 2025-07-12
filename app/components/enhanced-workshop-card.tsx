@@ -13,7 +13,7 @@ export default function EnhancedWorkshopCard({
   workshop,
 }: EnhancedWorkshopCardProps) {
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 max-w-sm mx-auto">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full flex flex-col">
       <div className="relative h-48">
         <Image
           src={workshop.image || "/placeholder.svg?height=200&width=300"}

@@ -38,15 +38,15 @@ export default function BookingLandingClient({ workshopId, batchId }: BookingLan
 
           // Ensure we have a properly structured workshop object
           setWorkshopData({
+            ...data, // Spread first so explicit fields below take precedence
             id: data.id || workshopId,
             title: data.title || "Workshop",
             price: data.fee || 0,
             sessions: data.sessions || 4,
             duration: data.duration || "2 hours",
-            image: data.image || null,
+            image: data.image || "/placeholder.svg?height=400&width=800", // Always fallback to placeholder
             batches: data.batches || [],
             selectedBatchId: batchId,
-            ...data// Include all other properties
           })
           console.log("Workshop data fetched:", workshopData)
         } else {

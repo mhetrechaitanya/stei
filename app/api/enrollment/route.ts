@@ -38,60 +38,133 @@ async function sendWelcomeEmail({
       },
     });
 
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Workshop Enrollment Confirmation</title>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .meeting-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea; }
+            .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+            .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>🎉 Welcome to ${workshopTitle}!</h1>
+            <p>Your enrollment has been confirmed</p>
+          </div>
+          
+          <div class="content">
+            <p>Dear ${firstName},</p>
+            
+            <p>Congratulations! You have successfully enrolled in <strong>${workshopTitle}</strong>.</p>
+            
+            <div class="meeting-info">
+              <h3>📅 Workshop Details:</h3>
+              <p><strong>Date:</strong> ${batchDate}</p>
+              <p><strong>Time:</strong> ${batchTime}</p>
+              <p><strong>Meeting Link:</strong> <a href="${meetingLink}">${meetingLink}</a></p>
+              <p><strong>Meeting ID:</strong> ${meetingId}</p>
+              <p><strong>Password:</strong> ${meetingPassword}</p>
+            </div>
+            
+            <p>We're excited to have you join us for this learning experience!</p>
+            
+            <a href="${meetingLink}" class="button">Join Workshop</a>
+            
+            <p>If you have any questions, please don't hesitate to reach out to us.</p>
+            
+            <p>Best regards,<br>The STEI Team</p>
+          </div>
+          
+          <div class="footer">
+            <p>This is an automated email. Please do not reply to this email.</p>
+          </div>
+        </body>
+      </html>
+    `;
+
     await transporter.sendMail({
-      from: `"stei" <${process.env.SMTP_USER_WORKSHOP}>`,
+      from: `"STEI Workshop" <${process.env.SMTP_USER_WORKSHOP}>`,
       to,
-      subject: `Workshop Confirmation – ${workshopTitle}`,
-      html: `
-      <div style="font-family: 'Segoe UI', sans-serif; background-color: #f9fafb; color: #333; padding: 0; margin: 0;">
-        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
-          <tr>
-            <td align="center" style="background-color: #ffffff; padding: 20px 0; border-bottom: 1px solid #eee;">
-              <div style="background-color: #ffffff; padding: 20px;">
-                <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/STEI-Logo-Final-y6nOYUE3jmODBGwK7QJbttdpZZEGTm.png" alt="stei logo" style="width: 150px;" />
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding: 40px 20px;">
-              <table cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 10px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                <tr>
-                  <td>
-                    <h2 style="color: #D40F14;">Dear ${firstName},</h2>
-                    <p style="font-size: 16px; line-height: 1.6;">Thank you for registering for <strong>${workshopTitle}</strong>.</p>
-                    <p style="font-size: 16px; line-height: 1.6;">Your workshop is scheduled on: <strong>${batchDate} at ${batchTime}</strong>.</p>
-
-                    <h3 style="margin-top: 25px;">Zoom Meeting Details:</h3>
-                    <p>
-                      <a href="${meetingLink}" style="color: #D40F14;">Join Meeting</a><br/>
-                      Meeting ID: <strong>${meetingId}</strong><br/>
-                      Password: <strong>${meetingPassword}</strong>
-                    </p>
-
-                    <p style="margin-top: 25px;">Wishing you all the best. Happy learning!</p>
-                    <p style="margin-top: 20px;">Warmly,<br/><strong>stei</strong></p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="background-color: #ffffff; padding: 20px; color: #555; font-size: 13px;">
-              <p style="margin: 0;">&copy; ${new Date().getFullYear()} stei. All rights reserved.</p>
-              <p style="margin: 5px 0;">
-                <a href="https://stei.pro" style="color: #D40F14; text-decoration: none;">Website</a> |
-                <a href="https://www.instagram.com/stei_edutech/" style="color: #D40F14; text-decoration: none;">Instagram</a> |
-                <a href="mailto:support@stei.com" style="color: #D40F14; text-decoration: none;">Contact Us</a>
-              </p>
-            </td>
-          </tr>
-        </table>
-      </div>`,
+      subject: `Welcome to ${workshopTitle} - Enrollment Confirmed`,
+      html: htmlContent,
     });
 
     return true;
-  } catch (err) {
-    console.error("❌ Email send failed:", err);
+  } catch (error) {
+    console.error("Email sending failed:", error);
+    return false;
+  }
+}
+
+// ✅ Create enrollments table if it doesn't exist
+async function ensureEnrollmentsTable() {
+  try {
+    const createTableSQL = `
+      CREATE TABLE IF NOT EXISTS enrollments (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        student_id UUID NOT NULL,
+        batch_id UUID NOT NULL,
+        enrollment_date DATE NOT NULL DEFAULT CURRENT_DATE,
+        payment_status TEXT DEFAULT 'completed',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      );
+    `;
+
+    // First, try to create the exec_sql function if it doesn't exist
+    const createFunctionSQL = `
+      CREATE OR REPLACE FUNCTION exec_sql(sql_query text)
+      RETURNS void
+      LANGUAGE plpgsql
+      SECURITY DEFINER
+      AS $$
+      BEGIN
+        EXECUTE sql_query;
+      END;
+      $$;
+    `;
+
+    try {
+      await supabase.rpc('exec_sql', { sql_query: createFunctionSQL });
+    } catch (functionError) {
+      console.log("exec_sql function may already exist or couldn't be created:", functionError);
+    }
+
+    // Now try to create the enrollments table
+    const { error } = await supabase.rpc('exec_sql', { sql_query: createTableSQL });
+    if (error) {
+      console.error("Error creating enrollments table:", error);
+      
+      // If exec_sql doesn't work, try creating the table directly
+      try {
+        const { error: directError } = await supabase
+          .from('enrollments')
+          .select('id')
+          .limit(1);
+        
+        if (directError && directError.code === '42P01') {
+          // Table doesn't exist, but we can't create it with exec_sql
+          console.error("enrollments table doesn't exist and can't be created automatically");
+          return false;
+        }
+      } catch (directCheckError) {
+        console.error("Error checking enrollments table existence:", directCheckError);
+        return false;
+      }
+      
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error("Error ensuring enrollments table:", error);
     return false;
   }
 }
@@ -100,12 +173,33 @@ async function sendWelcomeEmail({
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { studentId, batchId, paymentStatus } = body;
+    console.log("Enrollment request body:", body);
+    
+    const { studentId, batchId, workshopId, paymentStatus, orderId, transactionId, amount } = body;
 
     if (!studentId || !batchId) {
       return NextResponse.json({
         success: false,
         message: "Missing studentId or batchId",
+      }, { status: 400 });
+    }
+
+    // Ensure enrollments table exists
+    await ensureEnrollmentsTable();
+
+    // Check if student is already enrolled in this batch
+    const { data: existingEnrollment } = await supabase
+      .from("enrollments")
+      .select("id")
+      .eq("student_id", studentId)
+      .eq("batch_id", batchId)
+      .single();
+
+    if (existingEnrollment) {
+      return NextResponse.json({
+        success: false,
+        message: "Student is already enrolled in this batch",
+        alreadyEnrolled: true
       }, { status: 400 });
     }
 
@@ -121,6 +215,7 @@ export async function POST(request: Request) {
       .select();
 
     if (insertError || !enrollmentData?.length) {
+      console.error("Enrollment insert error:", insertError);
       return NextResponse.json({
         success: false,
         message: "Failed to create enrollment",
@@ -128,55 +223,92 @@ export async function POST(request: Request) {
       }, { status: 500 });
     }
 
-    // Get student details
+    // Get student details - try both name and first_name fields
     const { data: student, error: studentError } = await supabase
       .from("students")
-      .select("first_name, email")
+      .select("first_name, last_name, email")
       .eq("id", studentId)
       .single();
 
-    // Get batch + workshop ID
+    if (studentError || !student) {
+      console.error("Student fetch error:", studentError);
+      return NextResponse.json({
+        success: false,
+        message: "Error fetching student details",
+        error: studentError?.message || "Student not found",
+      }, { status: 500 });
+    }
+
+    // Get batch details - use workshop_batches table
     const { data: batch, error: batchError } = await supabase
       .from("batches")
-      .select("start_date, start_time, zoom_link, zoom_id, zoom_password, workshop_id")
+      .select("start_date, start_time, workshop_id,zoom_link,zoom_password,zoom_id")
       .eq("id", batchId)
       .single();
 
-    if (!student || studentError || !batch || batchError) {
+    if (batchError || !batch) {
+      console.error("Batch fetch error:", batchError);
       return NextResponse.json({
         success: false,
-        message: "Error fetching student or batch",
-        error: studentError?.message || batchError?.message || "Unknown error",
+        message: "Error fetching batch details",
+        error: batchError?.message || "Batch not found",
       }, { status: 500 });
     }
 
     // Get workshop title
     const { data: workshop, error: workshopError } = await supabase
       .from("workshops")
-      .select("title")
+      .select("name")
       .eq("id", batch.workshop_id)
       .single();
 
-    const workshopTitle = workshop?.title || "Workshop";
+    const workshopTitle = workshop?.name || "Workshop";
+
+    // Prepare student name
+    const studentName = student.first_name || "Student";
 
     // Send Email
     const emailSent = await sendWelcomeEmail({
       to: student.email,
-      firstName: student.first_name,
+      firstName: studentName,
       batchDate: batch.start_date || "N/A",
       batchTime: batch.start_time || "N/A",
-      meetingLink: batch.zoom_link || "#",
-      meetingId: batch.zoom_id || "-",
-      meetingPassword: batch.zoom_password || "-",
+      meetingLink: batch.zoom_link || "N/A", // Add zoom link when available
+      meetingId: batch.zoom_id || "N/A",
+      meetingPassword: batch.zoom_password || "N/A",
       workshopTitle,
     });
+
     if (!emailSent) {
       console.warn("Enrollment created, but confirmation email failed to send.");
     }
 
+    // Try to increment batch enrollment count
+    // try {
+    //   // First get current enrollment count
+    //   const { data: currentBatch } = await supabase
+    //     .from("batches")
+    //     .select("enrolled")
+    //     .eq("id", batchId)
+    //     .single();
+      
+    //   const newEnrolledCount = (currentBatch?.enrolled || 0) + 1;
+      
+    //   const { error: updateError } = await supabase
+    //     .from("workshop_batches")
+    //     .update({ enrolled: newEnrolledCount })
+    //     .eq("id", batchId);
+      
+    //   if (updateError) {
+    //     console.warn("Failed to increment batch enrollment count:", updateError);
+    //   }
+    // } catch (updateErr) {
+    //   console.warn("Failed to increment batch enrollment count:", updateErr);
+    // }
+
     return NextResponse.json({
       success: true,
-      message: "Enrollment created and email sent",
+      message: "Enrollment created successfully",
       enrollment: enrollmentData[0],
       emailSent,
     });
