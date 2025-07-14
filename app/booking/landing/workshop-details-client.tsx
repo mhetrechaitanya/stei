@@ -180,42 +180,6 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
             </div>
           </div>
 
-          {/* Start Date */}
-          <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
-                <Calendar className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <p className="font-semibold text-gray-800">Start Date</p>
-                <p className="text-gray-600">
-                  {(workshop as any).start_date 
-                    ? new Date((workshop as any).start_date).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'long',
-                        year: 'numeric'
-                      })
-                    : "To be announced"}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Session Start Time */}
-          <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
-            <div className="flex items-start space-x-3">
-              <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
-                <Clock className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <p className="font-semibold text-gray-800">Session Time</p>
-                <p className="text-gray-600">
-                  {(workshop as any).session_start_time || "10:00 AM"}
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* Sessions per Day */}
           <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
             <div className="flex items-start space-x-3">
