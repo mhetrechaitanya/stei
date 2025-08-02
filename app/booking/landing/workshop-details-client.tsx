@@ -157,7 +157,7 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
               <div>
                 <p className="font-semibold text-gray-800">Total Sessions</p>
                 <p className="text-gray-600">
-                  {(workshop as any).sessions_r || 4} sessions
+                  {(workshop as any).sessions_r || 1} session{(workshop as any).sessions_r && (workshop as any).sessions_r > 1 ? 's' : ''}
                 </p>
               </div>
             </div>
