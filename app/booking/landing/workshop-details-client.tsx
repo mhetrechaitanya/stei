@@ -67,6 +67,21 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
     console.log("Enroll now button clicked in WorkshopDetailsClient");
   };
 
+  // Debug: Log workshop data to see what's actually loaded
+  console.log('Workshop data loaded:', workshop);
+  console.log('Workshop duration_value:', (workshop as any).duration_value);
+  console.log('Workshop duration_unit:', (workshop as any).duration_unit);
+  console.log('Workshop minutes_per_session:', (workshop as any).minutes_per_session);
+  console.log('Workshop sessions_per_day:', (workshop as any).sessions_per_day);
+
+  // Use the actual database fields
+  const totalDays = (workshop as any).duration_value || 1;
+  const sessionsPerDay = (workshop as any).sessions_per_day || 1;
+  const sessionDurationMinutes = (workshop as any).minutes_per_session || 120;
+  
+  // Calculate total sessions based on duration and sessions per day
+  const totalSessions = totalDays * sessionsPerDay;
+
   if (!workshop) {
     return (
       <div className="p-6 bg-gradient-to-r from-amber-50 to-yellow-50 border-l-4 border-amber-400 rounded-xl shadow-sm">
@@ -131,7 +146,7 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
           <h3 className="text-2xl font-bold text-slate-800">Workshop Schedule & Details</h3>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Duration */}
+          {/* Total Duration - Shows total days */}
           <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
@@ -140,15 +155,13 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
               <div>
                 <p className="font-semibold text-gray-800">Total Duration</p>
                 <p className="text-gray-600">
-                  {(workshop as any).duration_v && (workshop as any).duration_u 
-                    ? `${(workshop as any).duration_v} ${(workshop as any).duration_u}` 
-                    : "2 hours per session"}
+                  {totalDays} day{(totalDays > 1 ? 's' : '')}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Sessions */}
+          {/* Total Sessions */}
           <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
@@ -157,13 +170,13 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
               <div>
                 <p className="font-semibold text-gray-800">Total Sessions</p>
                 <p className="text-gray-600">
-                  {(workshop as any).sessions_r || 1} session{(workshop as any).sessions_r && (workshop as any).sessions_r > 1 ? 's' : ''}
+                  {totalSessions} session{totalSessions > 1 ? 's' : ''}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Minutes per Session */}
+          {/* Session Duration */}
           <div className="bg-white rounded-xl p-6 border border-indigo-200 shadow-sm">
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0 w-10 h-10 bg-[#D40F14] rounded-lg flex items-center justify-center">
@@ -172,9 +185,7 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
               <div>
                 <p className="font-semibold text-gray-800">Session Duration</p>
                 <p className="text-gray-600">
-                  {(workshop as any).minutes_p 
-                    ? `${(workshop as any).minutes_p} minutes` 
-                    : "120 minutes"}
+                  {sessionDurationMinutes} minutes
                 </p>
               </div>
             </div>
@@ -189,7 +200,7 @@ export default function WorkshopDetailsClient({ workshop }: { workshop: Workshop
               <div>
                 <p className="font-semibold text-gray-800">Sessions per Day</p>
                 <p className="text-gray-600">
-                  {(workshop as any).sessions_per_day || "1 session"}
+                  {sessionsPerDay} session{(sessionsPerDay > 1 ? 's' : '')}
                 </p>
               </div>
             </div>

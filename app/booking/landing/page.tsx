@@ -162,11 +162,10 @@ export default async function BookingLandingPage({
     testimonials: Array.isArray(selectedWorkshop.testimonials)
       ? selectedWorkshop.testimonials
       : [],
-    // Add schedule-related fields
-    duration_v: selectedWorkshop.duration_v,
-    duration_u: selectedWorkshop.duration_u,
-    sessions_r: selectedWorkshop.sessions_r,
-    minutes_p: selectedWorkshop.minutes_p,
+    // Add schedule-related fields with correct database field names
+    duration_value: selectedWorkshop.duration_value,
+    duration_unit: selectedWorkshop.duration_unit,
+    minutes_per_session: selectedWorkshop.minutes_per_session,
     start_date: selectedWorkshop.start_date,
     session_start_time: selectedWorkshop.session_start_time,
     sessions_per_day: selectedWorkshop.sessions_per_day,
