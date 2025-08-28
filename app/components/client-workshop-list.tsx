@@ -115,6 +115,35 @@ export default function ClientWorkshopList({ initialWorkshops = [], categories =
     )
   }
 
+  // If there are workshops but filtered results are empty, show a different message
+  if (workshops.length > 0 && filteredWorkshops.length === 0 && !isLoading && !error) {
+    return (
+      <div className="text-center py-12">
+        <h3 className="text-xl font-semibold mb-2">No Workshops Found</h3>
+        <p className="text-gray-600 mb-6">
+          {currentCategory === "all" 
+            ? "No workshops match your current filter criteria." 
+            : `No workshops found in the "${currentCategory}" category.`
+          }
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            onClick={() => handleCategoryChange("all")}
+            className="px-4 py-2 bg-[#D40F14] text-white rounded-md hover:bg-red-700 transition-colors"
+          >
+            View All Workshops
+          </button>
+          <button
+            onClick={refreshWorkshops}
+            className="px-4 py-2 border border-[#D40F14] text-[#D40F14] rounded-md hover:bg-[#D40F14] hover:text-white transition-colors"
+          >
+            Refresh Data
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   // Filter categories to only show those with workshops
   const activeCategories = categories.filter(
     (cat) => typeof cat === 'string' && cat.toLowerCase() === "all" || workshops.some((workshop) => workshop.category_id === cat)
@@ -188,7 +217,20 @@ export default function ClientWorkshopList({ initialWorkshops = [], categories =
       {!isLoading && filteredWorkshops.length === 0 && workshops.length > 0 && (
         <div className="text-center py-12">
           <h3 className="text-xl font-semibold mb-2">No Workshops Found</h3>
-          <p className="text-gray-600">Try selecting a different category.</p>
+          <p className="text-gray-600">
+            {currentCategory === "all" 
+              ? "No workshops match your current filter criteria." 
+              : `No workshops found in the "${currentCategory}" category.`
+            }
+          </p>
+          <div className="mt-4">
+            <button
+              onClick={() => handleCategoryChange("all")}
+              className="px-4 py-2 bg-[#D40F14] text-white rounded-md hover:bg-red-700 transition-colors"
+            >
+              View All Workshops
+            </button>
+          </div>
         </div>
       )}
     </div>

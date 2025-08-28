@@ -1,24 +1,82 @@
-import { Suspense } from "react"
+"use client"
+
+import { Suspense, useEffect, useState } from "react"
 import { getActiveWorkshopCategories, getWorkshops } from "@/lib/workshop-service"
 import ClientWorkshopList from "@/app/components/client-workshop-list"
 import { OurWorkshopsHeading } from "@/app/components/our-workshops-heading"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 
-// Server-side configuration
-export const dynamic = "force-dynamic"
-export const revalidate = 0
+export default function WorkshopsPage() {
+  const searchParams = useSearchParams()
+  const filter = searchParams.get('filter')
+  const [workshops, setWorkshops] = useState([])
+  const [categories, setCategories] = useState([])
+  const [error, setError] = useState(null)
+  const [fallback, setFallback] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
-export default async function WorkshopsPage() {
-  // Server-side data fetching
-  const { data: workshops = [], error, fallback } = await getWorkshops()
-  const { data: categories = [] } = await getActiveWorkshopCategories()
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true)
+        const workshopsResult = await getWorkshops()
+        const categoriesResult = await getActiveWorkshopCategories()
+        
+        setWorkshops(workshopsResult.data || [])
+        setCategories(categoriesResult.data || [])
+        setError(workshopsResult.error)
+        setFallback(workshopsResult.fallback)
+      } catch (err) {
+        setError(err.message || "Failed to fetch data")
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [])
+
+  // Filter workshops if free filter is applied
+  const filteredWorkshops = filter === 'free' 
+    ? workshops.filter(workshop => workshop.fee === 0)
+    : workshops
 
   const hasError = !!error
   const isFallback = fallback
 
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <OurWorkshopsHeading />
+        <div className="flex justify-center items-center py-12">
+          <div className="w-16 h-16 border-4 border-red-200 border-t-red-600 rounded-full animate-spin"></div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <OurWorkshopsHeading />
+
+      {/* Show filter indicator if free workshops are being displayed */}
+      {filter === 'free' && (
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 my-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-gray-700 font-medium">Showing free workshops only</span>
+            </div>
+            <Link
+              href="/workshops"
+              className="px-4 py-2 bg-[#D40F14] text-white rounded-md hover:bg-red-700 transition-colors text-sm font-medium"
+            >
+              View All Workshops
+            </Link>
+          </div>
+        </div>
+      )}
 
       {hasError && (
         <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 my-8">
@@ -33,7 +91,6 @@ export default async function WorkshopsPage() {
             >
               Troubleshoot Workshops
             </Link>
-            {/* Remove client-side reload button */}
           </div>
         </div>
       )}
@@ -66,8 +123,8 @@ export default async function WorkshopsPage() {
             </div>
           }
         >
-          {/* Pass data to client component */}
-          <ClientWorkshopList initialWorkshops={workshops} categories={categories} />
+          {/* Pass filtered data to client component */}
+          <ClientWorkshopList initialWorkshops={filteredWorkshops} categories={categories} />
         </Suspense>
       )}
     </div>

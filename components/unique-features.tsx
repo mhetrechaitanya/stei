@@ -5,6 +5,7 @@ import Image from "next/image"
 import { cn } from "@/lib/utils"
 import SteiText from "./stei-text"
 import FounderPopup from "@/app/components/founder-popup"
+import FreeWebinarsSection from "./free-webinars-section"
 
 const features = [
   {
@@ -176,6 +177,11 @@ export default function UniqueFeatures() {
               </div>
             </a>
           ))}
+        </div>
+
+        {/* Free Webinars Section */}
+        <div className="mt-24 mb-16">
+          <FreeWebinarsSection />
         </div>
 
         {/* Join the STEI Movement Section */}
