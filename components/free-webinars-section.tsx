@@ -38,39 +38,15 @@ export default function FreeWebinarsSection() {
         setFreeWorkshops([
           {
             id: "free-1",
-            name: "Introduction to Leadership",
-            description: "Discover the fundamentals of effective leadership in this free introductory session.",
-            image: "/diverse-group-leadership.png",
-            fee: 0,
-            sessions_r: 1,
-            duration_v: "2",
-            duration_u: "hours",
-            category_id: "Self-growth",
-            slug: "introduction-to-leadership"
-          },
-          {
-            id: "free-2",
-            name: "Public Speaking Basics",
-            description: "Learn essential public speaking techniques in this complimentary workshop.",
+            name: "Speak to Impress: Master the Art of Presenting & Communicating with Impact",
+            description: "We are delighted to invite you to our free webinar, Speak to Impress: Master the Art of Presenting & Communicating with Impact. In just 60 minutes, you'll gain practical strategies to elevate your presentation and communication skills.",
             image: "/public-speaking-stage.png",
             fee: 0,
             sessions_r: 1,
-            duration_v: "1.5",
-            duration_u: "hours",
-            category_id: "iACE Series",
-            slug: "public-speaking-basics"
-          },
-          {
-            id: "free-3",
-            name: "Mindset Transformation",
-            description: "Transform your limiting beliefs and develop a growth mindset that will propel you towards success.",
-            image: "/placeholder.svg?key=junp9",
-            fee: 0,
-            sessions_r: 1,
-            duration_v: "2.5",
-            duration_u: "hours",
-            category_id: "Self-growth",
-            slug: "mindset-transformation"
+            duration_v: "1",
+            duration_u: "hour",
+            category_id: "Communication",
+            slug: "speak-to-impress-webinar"
           }
         ])
       } finally {
@@ -149,16 +125,16 @@ export default function FreeWebinarsSection() {
             className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6"
             variants={itemVariants}
           >
-            Start Your Journey
-            <span className="text-red-600 block">Absolutely Free</span>
+            Speak to Impress
+            <span className="text-red-600 block">Master Communication & Impact</span>
           </motion.h2>
           
           <motion.p
             className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4"
             variants={itemVariants}
           >
-            Experience the power of transformation with our complimentary webinars. 
-            No cost, no commitment - just pure learning and growth.
+            Join our free webinar and gain practical strategies to elevate your presentation and communication skills in just 60 minutes. 
+            No cost, no commitment - just pure learning and transformation.
           </motion.p>
         </motion.div>
 
@@ -243,11 +219,11 @@ export default function FreeWebinarsSection() {
         >
           <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 max-w-2xl mx-auto border border-gray-100">
             <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
-              Ready to Transform Your Life?
+              Ready to Master Your Communication Skills?
             </h3>
             <p className="text-gray-600 mb-6 text-sm md:text-base">
-              Join thousands of individuals who have already started their journey with our free webinars. 
-              No registration fees, no hidden costs - just pure transformation.
+              Join our free "Speak to Impress" webinar and discover practical strategies to elevate your presentation and communication skills. 
+              No registration fees, no hidden costs - just pure learning and growth.
             </p>
                          <div className="flex flex-col sm:flex-row gap-4 justify-center">
                <Link
