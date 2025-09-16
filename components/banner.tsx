@@ -11,6 +11,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react"
 const bannerItems = [
   {
     id: 1,
+    image: "/images/b3.png",
+    title: "Transform Your Future",
+    description: "Discover your potential through expert guidance and personalized learning experiences",
+    ctaText: "Get Started",
+    ctaLink: "/about",
+  },
+  {
+    id: 2,
     image: "/images/banner-1.png",
     title: "Empowering Individuals",
     description: "Building confidence through personalised coaching in an engaging, inclusive environment",
@@ -18,7 +26,7 @@ const bannerItems = [
     ctaLink: "/about",
   },
   {
-    id: 2,
+    id: 3,
     image: "/images/workshop-training.jpg",
     title: "Presence-Driven Learning - You Show Up. You Shift. That's the Deal.",
     description: "No recordings. No passive downloads. No distractions.",
