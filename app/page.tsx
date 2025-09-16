@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import Banner from "@/components/banner"
 import UniqueFeatures from "@/components/unique-features"
 import SteiText from "@/components/stei-text"
+import PartnersSection from "@/app/components/partners-section"
 import InspirationSection from "@/app/components/inspiration-section"
 
 const OurMission = () => {
@@ -105,6 +106,7 @@ export default function Page() {
       <Banner />
       <OurMission />
       <UniqueFeatures />
+      <PartnersSection />
       <InspirationSection />
     </div>
   )
